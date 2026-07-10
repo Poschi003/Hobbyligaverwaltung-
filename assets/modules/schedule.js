@@ -12,14 +12,20 @@
     return Boolean(findById(state, fixtureId));
   }
 
+  function normalizeDay(day) {
+    if (day === null || day === undefined || (typeof day === "string" && day.trim() === "")) return null;
+    const normalized = Number(day);
+    return Number.isFinite(normalized) ? normalized : null;
+  }
+
   function getDays(state) {
-    return [...new Set(getAll(state).map((fixture) => Number(fixture.day)).filter(Number.isFinite))].sort((a, b) => a - b);
+    return [...new Set(getAll(state).map((fixture) => normalizeDay(fixture.day)).filter((day) => day !== null))].sort((a, b) => a - b);
   }
 
   function getByDay(state, day) {
-    const targetDay = Number(day);
-    if (!Number.isFinite(targetDay)) return [];
-    return getAll(state).filter((fixture) => Number(fixture.day) === targetDay);
+    const targetDay = normalizeDay(day);
+    if (targetDay === null) return [];
+    return getAll(state).filter((fixture) => normalizeDay(fixture.day) === targetDay);
   }
 
   function getByTeam(state, teamId) {
