@@ -1419,7 +1419,7 @@ function renderPlayerSubmitResults() {
 }
 
 function playerResultRowHtml(fixture, player) {
-  const scores = [1, 2, 3].map((number) => fixture.games.find((game) => game.number === number)?.scores[player.id]?.gross ?? "");
+  const scores = [1, 2, 3].map((number) => window.HobbyligaResults.getScore(fixture, number, player.id)?.gross ?? "");
   const numeric = scores.map((value) => Number(value)).filter((value) => Number.isFinite(value) && value > 0);
   const series = numeric.reduce((sum, value) => sum + value, 0);
   const average = numeric.length ? (series / numeric.length).toFixed(1) : "-";
@@ -1476,7 +1476,7 @@ function renderUpcomingGames() {
 
 function upcomingGameRowHtml(fixture, teamId) {
   const opponent = teamById(fixture.homeTeamId === teamId ? fixture.awayTeamId : fixture.homeTeamId);
-  const status = fixture.confirmed ? "released" : fixture.status || "planned";
+  const status = window.HobbyligaResults.isConfirmed(fixture) ? "released" : fixture.status || "planned";
   return `<tr><td><strong>${opponent?.name || "-"}</strong><br><span class="mini">Spieltag ${fixture.day} · Bahn ${fixture.lane}</span></td><td>${formatDate(fixture.date)}</td><td>${fixture.time || "-"}</td><td>${fixture.venue || state.league.venue}</td><td><span class="pill ${status === "released" ? "good" : status === "postponed" || status === "submitted" ? "warn" : ""}">${fixtureStatusLabels[status] || status}</span></td></tr>`;
 }
 
@@ -1503,7 +1503,7 @@ function nextOpenFixture(teamId = null) {
 }
 
 function canEnterFixture(fixture) {
-  if (!fixture || fixture.confirmed || fixture.status === "played") return false;
+  if (!fixture || window.HobbyligaResults.isConfirmed(fixture) || fixture.status === "played") return false;
   return !!fixture.activation?.approved;
 }
 
@@ -1536,7 +1536,7 @@ function requestLabel(type) {
 function matchSummaryHtml(fixture) {
   const home = teamById(fixture.homeTeamId);
   const away = teamById(fixture.awayTeamId);
-  return `<article class="news-item"><time>${formatDate(fixture.date)} · Spieltag ${fixture.day} · ${fixture.round} · Bahn ${fixture.lane}</time><h3>${home.name} vs. ${away.name}</h3><p class="mini">${fixture.saved ? "gespielt" : "offen"}</p></article>`;
+  return `<article class="news-item"><time>${formatDate(fixture.date)} · Spieltag ${fixture.day} · ${fixture.round} · Bahn ${fixture.lane}</time><h3>${home.name} vs. ${away.name}</h3><p class="mini">${window.HobbyligaResults.isSaved(fixture) ? "gespielt" : "offen"}</p></article>`;
 }
 
 function playerScoreRows(playerId) {
@@ -1651,7 +1651,7 @@ function renderSchedule() {
 }
 
 function renderResults() {
-  const selectedId = sessionStorage.getItem("selectedFixtureId") || state.fixtures.find((fixture) => !fixture.saved && fixture.status !== "played")?.id || state.fixtures.find((fixture) => !fixture.saved)?.id || state.fixtures[0]?.id;
+  const selectedId = sessionStorage.getItem("selectedFixtureId") || state.fixtures.find((fixture) => !window.HobbyligaResults.isSaved(fixture) && fixture.status !== "played")?.id || state.fixtures.find((fixture) => !window.HobbyligaResults.isSaved(fixture))?.id || state.fixtures[0]?.id;
   const fixture = window.HobbyligaSchedule.findById(state, selectedId) || state.fixtures[0];
   if (fixture) sessionStorage.setItem("selectedFixtureId", fixture.id);
   const wrap = el("div");
@@ -1668,7 +1668,7 @@ function renderResults() {
         </div>
         <div>
           <span class="field-label">Status</span>
-          <p><span class="pill ${fixture.saved ? "good" : "warn"}">${fixture.saved ? (fixture.confirmed ? "Bestätigt" : "Vorläufig") : "Offen"}</span></p>
+          <p><span class="pill ${window.HobbyligaResults.isSaved(fixture) ? "good" : "warn"}">${window.HobbyligaResults.isSaved(fixture) ? (window.HobbyligaResults.isConfirmed(fixture) ? "Bestätigt" : "Vorläufig") : "Offen"}</span></p>
         </div>
       </div>
     </div>
@@ -1681,11 +1681,11 @@ function renderResults() {
       </div>
       <div class="section actions">
         <button class="primary-button" type="submit">Ergebnis speichern</button>
-        ${fixture.saved ? `<button class="button" type="button" data-action="toggle-confirm" data-id="${fixture.id}">${fixture.confirmed ? "Auf vorläufig setzen" : "Freigeben"}</button><button class="danger-button" type="button" data-action="reject-result" data-id="${fixture.id}">Ablehnen</button>` : ""}
+        ${window.HobbyligaResults.isSaved(fixture) ? `<button class="button" type="button" data-action="toggle-confirm" data-id="${fixture.id}">${window.HobbyligaResults.isConfirmed(fixture) ? "Auf vorläufig setzen" : "Freigeben"}</button><button class="danger-button" type="button" data-action="reject-result" data-id="${fixture.id}">Ablehnen</button>` : ""}
         <button class="ghost-button" type="button" data-action="clear-fixture" data-id="${fixture.id}">Ergebnis leeren</button>
       </div>
     </form>
-    ${fixture.saved ? `<div class="section grid cols-3">${stat("Punkte Heim", fixture.points.home)}${stat("Punkte Auswärts", fixture.points.away)}${stat("Netto gesamt", `${fixture.totals.homeNet}:${fixture.totals.awayNet}`)}</div>` : ""}
+    ${window.HobbyligaResults.isSaved(fixture) ? `<div class="section grid cols-3">${stat("Punkte Heim", fixture.points.home)}${stat("Punkte Auswärts", fixture.points.away)}${stat("Netto gesamt", `${fixture.totals.homeNet}:${fixture.totals.awayNet}`)}</div>` : ""}
   `;
   $("#fixturePicker", wrap).value = fixture.id;
   return wrap;
@@ -1853,12 +1853,12 @@ function field(label, id, value, type = "text", step = "1") {
 function matchCardHtml(fixture) {
   const home = teamById(fixture.homeTeamId);
   const away = teamById(fixture.awayTeamId);
-  const score = fixture.saved ? `${fixture.points.home}:${fixture.points.away}` : "offen";
+  const score = window.HobbyligaResults.isSaved(fixture) ? `${fixture.points.home}:${fixture.points.away}` : "offen";
   return `
     <article class="match-card">
-      <div class="match-title"><span class="pill">Bahn ${fixture.lane}</span><span class="pill ${fixture.confirmed ? "good" : fixture.status === "submitted" ? "warn" : ""}">${fixture.confirmed ? "Freigegeben" : fixtureStatusLabels[fixture.status] || "offen"}</span></div>
+      <div class="match-title"><span class="pill">Bahn ${fixture.lane}</span><span class="pill ${window.HobbyligaResults.isConfirmed(fixture) ? "good" : fixture.status === "submitted" ? "warn" : ""}">${window.HobbyligaResults.isConfirmed(fixture) ? "Freigegeben" : fixtureStatusLabels[fixture.status] || "offen"}</span></div>
       <div class="scoreline"><strong>${home.name}</strong><span class="scorebox">${score}</span><strong>${away.name}</strong></div>
-      <p class="mini">${formatDate(fixture.date)} · ${fixture.time || "-"} · ${fixture.venue || state.league.venue} · ${fixtureStatusLabels[fixture.confirmed ? "released" : fixture.status] || fixture.status}</p>
+      <p class="mini">${formatDate(fixture.date)} · ${fixture.time || "-"} · ${fixture.venue || state.league.venue} · ${fixtureStatusLabels[window.HobbyligaResults.isConfirmed(fixture) ? "released" : fixture.status] || fixture.status}</p>
       <div class="form-row">
         <div><label>Datum</label><input type="date" value="${fixture.date || ""}" data-fixture-field="date" data-id="${fixture.id}" /></div>
         <div><label>Uhrzeit</label><input type="time" value="${fixture.time || ""}" data-fixture-field="time" data-id="${fixture.id}" /></div>
@@ -1877,8 +1877,8 @@ function matchCardHtml(fixture) {
 function scheduleOverviewCardHtml(fixture) {
   const home = teamById(fixture.homeTeamId);
   const away = teamById(fixture.awayTeamId);
-  const status = fixture.confirmed ? "released" : fixture.status || "planned";
-  const result = fixture.saved ? `${fixture.points.home}:${fixture.points.away}` : "offen";
+  const status = window.HobbyligaResults.isConfirmed(fixture) ? "released" : fixture.status || "planned";
+  const result = window.HobbyligaResults.isSaved(fixture) ? `${fixture.points.home}:${fixture.points.away}` : "offen";
   return `
     <article class="match-card">
       <div class="match-title"><span class="pill">Bahn ${fixture.lane}</span><span class="pill ${status === "released" ? "good" : status === "postponed" || status === "submitted" ? "warn" : ""}">${fixtureStatusLabels[status] || status}</span></div>
@@ -1901,7 +1901,7 @@ function resultTeamHtml(fixture, teamId) {
           const stats = playerStats(player.id, fixture.id);
           return `
             <span>${player.name}<br><span class="mini">${stats.valid ? `Schnitt ${stats.average.toFixed(1)} · HC ${stats.handicap}` : "Schnitt/HC noch nicht verfügbar"}</span></span>
-            ${fixture.games.map((game) => `<input name="${fixture.id}|${game.number}|${player.id}" inputmode="numeric" type="number" min="0" max="300" value="${game.scores[player.id]?.gross ?? ""}" required />`).join("")}
+            ${window.HobbyligaResults.getGames(fixture).map((game) => `<input name="${fixture.id}|${game.number}|${player.id}" inputmode="numeric" type="number" min="0" max="300" value="${window.HobbyligaResults.getScore(fixture, game.number, player.id)?.gross ?? ""}" required />`).join("")}
           `;
         }).join("")}
       </div>
@@ -2241,7 +2241,7 @@ document.addEventListener("click", (event) => {
   if (action.dataset.action === "toggle-confirm") {
     if (!canAdmin()) return;
     const fixture = window.HobbyligaSchedule.findById(state, id);
-    if (!fixture || !fixture.saved) return;
+    if (!fixture || !window.HobbyligaResults.isSaved(fixture)) return;
     fixture.confirmed = !fixture.confirmed;
     fixture.rulesSnapshot = fixture.confirmed ? currentRulesSnapshot() : null;
     fixture.status = fixture.confirmed ? "released" : "submitted";
@@ -2409,8 +2409,7 @@ document.addEventListener("submit", (event) => {
       const parsed = scoreValue(value);
       if (parsed === null) return toast("Bitte nur Pins von 0 bis 300 eintragen");
       const [, gameNumber, playerId] = key.split("|");
-      const game = fixture.games.find((item) => item.number === Number(gameNumber));
-      game.scores[playerId] = { gross: parsed, handicap: 0, net: parsed };
+      window.HobbyligaResults.setScore(fixture, gameNumber, playerId, { gross: parsed, handicap: 0, net: parsed });
     }
     fixture.saved = true;
     fixture.confirmed = state.league.autoConfirmResults;
@@ -2461,8 +2460,7 @@ document.addEventListener("submit", (event) => {
       const [, gameNumber, playerId] = key.split("|");
       const teamPlayer = playerById(playerId);
       if (!teamPlayer || teamPlayer.teamId !== player.teamId) return toast("Nur dein Team darf eingereicht werden");
-      const game = fixture.games.find((item) => item.number === Number(gameNumber));
-      game.scores[playerId] = { gross: parsed, handicap: 0, net: parsed };
+      window.HobbyligaResults.setScore(fixture, gameNumber, playerId, { gross: parsed, handicap: 0, net: parsed });
     }
     fixture.saved = true;
     fixture.confirmed = false;
