@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>LA Bowling Hobbyliga</title>
+    <link rel="manifest" href="manifest.json?v=19" />
+    <link rel="icon" type="image/png" href="assets/la-bowling-hobbyliga-icon.png?v=19" />
+    <link rel="apple-touch-icon" href="assets/la-bowling-hobbyliga-icon.png?v=19" />
+    <link rel="stylesheet" href="assets/styles.css?v=24" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Hauptnavigation">
+        <div class="brand">
+          <img class="brand-logo" src="assets/la-bowling-hobbyliga-logo.png?v=19" alt="LA-Bowling Hobbyliga" />
+          <div>
+            <strong>LA Bowling</strong>
+            <span>Hobbyliga</span>
+          </div>
+        </div>
+        <nav id="mainNav" class="nav"></nav>
+        <div id="userPanel" class="login-card"></div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <button id="menuToggle" class="icon-button" type="button" aria-label="Navigation öffnen">☰</button>
+          <div>
+            <p id="eyebrow" class="eyebrow">Liga-Zentrale</p>
+            <h1 id="pageTitle">Dashboard</h1>
+          </div>
+          <button id="saveSnapshot" class="ghost-button" type="button">Backup</button>
+        </header>
+
+        <section id="view" class="view" aria-live="polite"></section>
+      </main>
+    </div>
+
+    <template id="emptyStateTemplate">
+      <div class="empty-state">
+        <strong></strong>
+        <span></span>
+      </div>
+    </template>
+
+    <script src="assets/core/storage.js?v=1"></script>
+    <script src="assets/core/state.js?v=1"></script>
+    <script src="assets/app.js?v=24"></script>
+  </body>
+</html>
