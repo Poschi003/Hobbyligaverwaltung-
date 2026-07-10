@@ -486,7 +486,7 @@ function teamById(id) {
 }
 
 function playerById(id) {
-  return state.players.find((player) => player.id === id);
+  return window.HobbyligaPlayers.findById(state, id);
 }
 
 function sessionUserId() {
