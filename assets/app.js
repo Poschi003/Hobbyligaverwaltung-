@@ -1,42 +1,14 @@
-const STORAGE_KEY = "la-bowling-hobbyliga-v4-season-2526";
-const AUTH_SESSION_KEY = "la-bowling-hobbyliga-session";
-const BIOMETRIC_KEY = "la-bowling-hobbyliga-biometric";
+const {
+  STORAGE_KEY,
+  AUTH_SESSION_KEY,
+  BIOMETRIC_KEY,
+  DEFAULT_VIEW,
+  NAV_ITEMS: navItems,
+  ROLE_LABELS: roleLabels,
+  FIXTURE_STATUS_LABELS: fixtureStatusLabels,
+} = window.HobbyligaConstants;
 
-const navItems = [
-  ["playerDashboard", "H", "Mein Dashboard", ["player"]],
-  ["upcomingGames", ">", "Kommende Spiele", ["player"]],
-  ["playerStats", "%", "Statistiken", ["player"]],
-  ["playerSubmitResults", "+", "Ergebnisse erfassen", ["player"]],
-  ["adminDashboard", "A", "Admin-Dashboard", ["admin"]],
-  ["cashierDashboard", "E", "Kasse", ["cashier"]],
-  ["league", "L", "Liga-Details", ["admin"]],
-  ["schedule", "#", "Spielplan", ["admin", "player"]],
-  ["results", "+", "Ergebnisse", ["admin"]],
-  ["table", "=", "Tabelle", ["admin"]],
-  ["leaders", "*", "Bestenlisten", ["admin"]],
-  ["fines", "E", "Strafen", ["admin", "cashier"]],
-  ["news", "!", "News", ["admin"]],
-  ["admin", "@", "Verwaltung", ["admin"]],
-];
-
-const roleLabels = {
-  admin: "Admin",
-  cashier: "Kassierer",
-  player: "Spieler",
-};
-
-const fixtureStatusLabels = {
-  open: "Offen",
-  planned: "geplant",
-  postponed: "verschoben",
-  makeup: "Nachholspiel",
-  submitted: "Eingereicht",
-  released: "Freigegeben",
-  rejected: "Abgelehnt",
-  played: "gespielt",
-};
-
-let currentView = "playerDashboard";
+let currentView = DEFAULT_VIEW;
 let state = window.HobbyligaState.initialize({
   storageKey: STORAGE_KEY,
   normalize: normalizeState,
