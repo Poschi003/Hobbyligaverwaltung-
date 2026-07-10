@@ -743,63 +743,7 @@ function finesForPlayer(playerId, onlyOpen = false) {
 }
 
 function standings(includeSubmitted = false) {
-  const rows = state.teams.map((team) => ({
-    team,
-    played: 0,
-    points: 0,
-    gamesWon: 0,
-    gamesLost: 0,
-    pins: 0,
-    against: 0,
-  }));
-
-  const rowFor = (teamId) => rows.find((row) => row.team.id === teamId);
-  (state.importedStandings || []).forEach((imported) => {
-    const row = rowFor(imported.teamId);
-    if (!row) return;
-    row.played = imported.played || 0;
-    row.points = imported.points || 0;
-    row.pointsLost = imported.pointsLost || 0;
-    row.gamesWon = imported.gamesWon || 0;
-    row.gamesLost = imported.gamesLost || 0;
-    row.pins = imported.pins || 0;
-    row.grossPins = imported.grossPins || 0;
-    row.against = imported.against || 0;
-  });
-
-  state.fixtures.filter((fixture) => fixture.saved && (fixture.confirmed || (includeSubmitted && fixture.status === "submitted"))).forEach((fixture) => {
-    if (state.importedStandingsThroughDay && fixture.day <= state.importedStandingsThroughDay) return;
-    const rules = rulesForFixture(fixture);
-    const home = rowFor(fixture.homeTeamId);
-    const away = rowFor(fixture.awayTeamId);
-    home.played += 1;
-    away.played += 1;
-    home.points += fixture.points.home;
-    away.points += fixture.points.away;
-    home.pins += fixture.totals.homeNet;
-    away.pins += fixture.totals.awayNet;
-    home.against += fixture.totals.awayNet;
-    away.against += fixture.totals.homeNet;
-
-    fixture.games.forEach((game) => {
-      const homeNet = playersForScoredGame(fixture, game, fixture.homeTeamId, rules.playersPerTeam).reduce((sum, player) => sum + (game.scores[player.id]?.net || 0), 0);
-      const awayNet = playersForScoredGame(fixture, game, fixture.awayTeamId, rules.playersPerTeam).reduce((sum, player) => sum + (game.scores[player.id]?.net || 0), 0);
-      if (homeNet > awayNet) {
-        home.gamesWon += 1;
-        away.gamesLost += 1;
-      } else if (awayNet > homeNet) {
-        away.gamesWon += 1;
-        home.gamesLost += 1;
-      }
-    });
-  });
-
-  return rows.sort((a, b) => {
-    const primary = b.points - a.points;
-    if (primary) return primary;
-    if (state.league.tableSort === "pointsThenDiff") return b.pins - b.against - (a.pins - a.against) || b.pins - a.pins || a.team.name.localeCompare(b.team.name);
-    return b.pins - a.pins || a.team.name.localeCompare(b.team.name);
-  });
+  return window.HobbyligaStandings.calculate(state, includeSubmitted);
 }
 
 function leadersByGender(gender) {
