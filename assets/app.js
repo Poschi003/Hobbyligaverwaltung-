@@ -1070,7 +1070,7 @@ function renderPlayerFixtureDay() {
   }
 
   const selectedId = sessionStorage.getItem("playerFixtureDayId");
-  const fixture = state.fixtures.find((item) => item.id === selectedId) || nextOpenFixture(player.teamId);
+  const fixture = window.HobbyligaSchedule.findById(state, selectedId) || nextOpenFixture(player.teamId);
   if (!fixture) {
     wrap.innerHTML = `
       <section class="fixture-page-hero">
@@ -1220,7 +1220,7 @@ function playerDashboardPanelHtml(panel, player, fixture, openFines, table) {
 }
 
 function fineDetailHtml(fine) {
-  const fixture = state.fixtures.find((item) => item.id === fine.fixtureId);
+  const fixture = window.HobbyligaSchedule.findById(state, fine.fixtureId);
   return `<article class="fine-item"><strong>${fine.total.toFixed(2)} €</strong><span>Spieltag ${fine.day}, Spiel ${fine.gameNumber} · ${formatDate(fixture?.date)} · ${fine.gross} Pins unter Strafgrenze ${fine.limit}</span><span class="mini">Grund: Ergebnis unter Strafgrenze</span></article>`;
 }
 
@@ -1341,8 +1341,8 @@ function renderPlayerSubmitResults() {
     wrap.innerHTML = emptyHtml("Kein Spielerprofil verknüpft", "Bitte den Admin, deinen Zugang einem Spieler zuzuweisen.");
     return wrap;
   }
-  const teamFixtures = state.fixtures
-    .filter((fixture) => fixture.homeTeamId === player.teamId || fixture.awayTeamId === player.teamId)
+  const teamFixtures = window.HobbyligaSchedule
+    .getByTeam(state, player.teamId)
     .filter((fixture) => !fixture.confirmed && fixture.status !== "played")
     .sort((a, b) => a.date.localeCompare(b.date) || a.day - b.day || a.lane - b.lane);
   const selectedId = sessionStorage.getItem("playerSubmitFixtureId") || teamFixtures[0]?.id;
@@ -1448,8 +1448,8 @@ function renderUpcomingGames() {
   }
 
   const team = teamById(player.teamId);
-  const games = state.fixtures
-    .filter((fixture) => fixture.homeTeamId === player.teamId || fixture.awayTeamId === player.teamId)
+  const games = window.HobbyligaSchedule
+    .getByTeam(state, player.teamId)
     .sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.time || "").localeCompare(b.time || "") || a.day - b.day);
 
   wrap.innerHTML = `
@@ -1636,13 +1636,13 @@ function renderLeague() {
 }
 
 function renderSchedule() {
-  const days = [...new Set(state.fixtures.map((fixture) => fixture.day))];
+  const days = window.HobbyligaSchedule.getDays(state);
   const wrap = el("div");
   wrap.innerHTML = canAdmin()
     ? `<div class="toolbar"><button class="primary-button" data-action="regen-schedule">Spielplan neu erstellen</button><span class="pill warn">Hinrunde und Rückrunde mit Heim-/Auswärtstausch</span></div>`
     : `<div class="dashboard-welcome"><div><p class="eyebrow">${window.HobbyligaLeague.getSeasonName(state)}</p><h2>Spielplan</h2><p>Alle Teams, alle Begegnungen, Ergebnisse und Status.</p></div></div>`;
   days.forEach((day) => {
-    const fixtures = state.fixtures.filter((fixture) => fixture.day === day);
+    const fixtures = window.HobbyligaSchedule.getByDay(state, day);
     const section = el("section", "section");
     section.innerHTML = `<h2>Spieltag ${day} · ${fixtures[0]?.round || ""}</h2><div class="grid cols-2">${fixtures.map((fixture) => (canAdmin() ? matchCardHtml(fixture) : scheduleOverviewCardHtml(fixture))).join("")}</div>`;
     wrap.append(section);
@@ -1652,7 +1652,7 @@ function renderSchedule() {
 
 function renderResults() {
   const selectedId = sessionStorage.getItem("selectedFixtureId") || state.fixtures.find((fixture) => !fixture.saved && fixture.status !== "played")?.id || state.fixtures.find((fixture) => !fixture.saved)?.id || state.fixtures[0]?.id;
-  const fixture = state.fixtures.find((item) => item.id === selectedId) || state.fixtures[0];
+  const fixture = window.HobbyligaSchedule.findById(state, selectedId) || state.fixtures[0];
   if (fixture) sessionStorage.setItem("selectedFixtureId", fixture.id);
   const wrap = el("div");
   if (!fixture) {
@@ -1969,7 +1969,7 @@ function cashierPlayerHtml(row) {
 }
 
 function fineHtml(fine) {
-  const fixture = state.fixtures.find((item) => item.id === fine.fixtureId);
+  const fixture = window.HobbyligaSchedule.findById(state, fine.fixtureId);
   const player = playerById(fine.playerId);
   const team = teamById(fine.teamId);
   return `
@@ -2144,7 +2144,7 @@ document.addEventListener("click", (event) => {
     render();
   }
   if (action.dataset.action === "start-result") {
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     if (!fixture || !canEnterFixture(fixture)) return toast("Spieltag noch nicht freigegeben");
     sessionStorage.setItem("playerSubmitFixtureId", id);
     currentView = "playerSubmitResults";
@@ -2152,7 +2152,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "request-fixture-activation") {
     const player = currentPlayer();
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     if (!player || !fixture || ![fixture.homeTeamId, fixture.awayTeamId].includes(player.teamId)) return toast("Aktivierung nicht möglich");
     const targetTeamId = fixture.homeTeamId === player.teamId ? fixture.awayTeamId : fixture.homeTeamId;
     fixture.activationRequests ||= [];
@@ -2177,7 +2177,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "approve-fixture-request") {
     const player = currentPlayer();
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     const request = fixture?.activationRequests?.find((item) => item.id === action.dataset.requestId);
     if (!player || !fixture || !request || request.targetTeamId !== player.teamId) return toast("Freigabe nicht möglich");
     request.status = "approved";
@@ -2194,7 +2194,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "calculate-blind") {
     const player = currentPlayer();
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     const teamId = action.dataset.teamId;
     if (!player || !fixture || player.teamId !== teamId) return toast("Blindspieler nicht möglich");
     fixture.blindPlayers ||= {};
@@ -2219,7 +2219,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "save-fixture-meta") {
     if (!canAdmin()) return;
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     if (!fixture) return;
     fixture.date = $(`[data-fixture-field="date"][data-id="${id}"]`).value;
     fixture.time = $(`[data-fixture-field="time"][data-id="${id}"]`).value;
@@ -2229,7 +2229,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "clear-fixture") {
     if (!canAdmin()) return toast("Nur Admins dürfen Ergebnisse löschen");
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     fixture.saved = false;
     fixture.confirmed = false;
     fixture.rulesSnapshot = null;
@@ -2240,7 +2240,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "toggle-confirm") {
     if (!canAdmin()) return;
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     if (!fixture || !fixture.saved) return;
     fixture.confirmed = !fixture.confirmed;
     fixture.rulesSnapshot = fixture.confirmed ? currentRulesSnapshot() : null;
@@ -2252,7 +2252,7 @@ document.addEventListener("click", (event) => {
   }
   if (action.dataset.action === "reject-result") {
     if (!canAdmin()) return;
-    const fixture = state.fixtures.find((item) => item.id === id);
+    const fixture = window.HobbyligaSchedule.findById(state, id);
     if (!fixture) return;
     fixture.confirmed = false;
     fixture.saved = false;
@@ -2403,7 +2403,7 @@ document.addEventListener("submit", (event) => {
     if (!canAdmin()) return toast("Nur Admins dürfen Ergebnisse speichern");
     const fixtureId = $("#fixturePicker")?.value || sessionStorage.getItem("selectedFixtureId");
     sessionStorage.setItem("selectedFixtureId", fixtureId);
-    const fixture = state.fixtures.find((item) => item.id === fixtureId);
+    const fixture = window.HobbyligaSchedule.findById(state, fixtureId);
     const form = new FormData(event.target);
     for (const [key, value] of form.entries()) {
       const parsed = scoreValue(value);
@@ -2422,7 +2422,7 @@ document.addEventListener("submit", (event) => {
   }
   if (event.target.dataset.form === "fixture-request") {
     const player = currentPlayer();
-    const fixture = state.fixtures.find((item) => item.id === event.target.dataset.id);
+    const fixture = window.HobbyligaSchedule.findById(state, event.target.dataset.id);
     if (!player || !fixture || ![fixture.homeTeamId, fixture.awayTeamId].includes(player.teamId)) return toast("Anfrage nicht möglich");
     const form = new FormData(event.target);
     const targetTeamId = fixture.homeTeamId === player.teamId ? fixture.awayTeamId : fixture.homeTeamId;
@@ -2451,7 +2451,7 @@ document.addEventListener("submit", (event) => {
     const player = currentPlayer();
     if (!player) return toast("Kein Spielerprofil verknüpft");
     const fixtureId = sessionStorage.getItem("playerSubmitFixtureId");
-    const fixture = state.fixtures.find((item) => item.id === fixtureId);
+    const fixture = window.HobbyligaSchedule.findById(state, fixtureId);
     if (!fixture || (fixture.homeTeamId !== player.teamId && fixture.awayTeamId !== player.teamId)) return toast("Spieltag nicht gefunden");
     if (!canEnterFixture(fixture)) return toast("Spieltag noch nicht freigegeben");
     const form = new FormData(event.target);
