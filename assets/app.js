@@ -590,26 +590,11 @@ function clamp(value, min, max) {
 }
 
 function currentRulesSnapshot() {
-  return {
-    gamesPerMatch: state.league.gamesPerMatch,
-    playersPerTeam: state.league.playersPerTeam,
-    handicapEnabled: state.league.handicapEnabled,
-    handicapBase: state.league.handicapBase,
-    handicapFactor: state.league.handicapFactor,
-    handicapMin: state.league.handicapMin,
-    handicapMax: state.league.handicapMax,
-    fineLimit: state.league.fineLimit,
-    fineAmount: state.league.fineAmount,
-    pointsPerGameWin: state.league.pointsPerGameWin,
-    pointsPerGameTie: state.league.pointsPerGameTie,
-    pointsTotalWin: state.league.pointsTotalWin,
-    pointsTotalTie: state.league.pointsTotalTie,
-    tableSort: state.league.tableSort,
-  };
+  return window.HobbyligaRules.createSnapshot(state);
 }
 
 function rulesForFixture(fixture) {
-  return fixture.confirmed && fixture.rulesSnapshot ? fixture.rulesSnapshot : currentRulesSnapshot();
+  return window.HobbyligaResults.isConfirmed(fixture) && window.HobbyligaRules.getRulesSnapshot(fixture) ? window.HobbyligaRules.getRulesSnapshot(fixture) : window.HobbyligaRules.createSnapshot(state);
 }
 
 function scoreValue(value) {
@@ -2199,7 +2184,7 @@ document.addEventListener("click", (event) => {
     if (!player || !fixture || player.teamId !== teamId) return toast("Blindspieler nicht möglich");
     fixture.blindPlayers ||= {};
     fixture.blindPlayers[teamId] = calculateBlindPlayer(fixture, teamId);
-    calculateFixture(fixture, currentRulesSnapshot());
+    calculateFixture(fixture, window.HobbyligaRules.createSnapshot(state));
     window.HobbyligaState.persist();
     toast("Blindspieler berechnet und für den Bowlingcomputer vormerken");
     render();
@@ -2243,7 +2228,11 @@ document.addEventListener("click", (event) => {
     const fixture = window.HobbyligaSchedule.findById(state, id);
     if (!fixture || !window.HobbyligaResults.isSaved(fixture)) return;
     fixture.confirmed = !fixture.confirmed;
-    fixture.rulesSnapshot = fixture.confirmed ? currentRulesSnapshot() : null;
+    if (fixture.confirmed) {
+      window.HobbyligaRules.setRulesSnapshot(fixture, window.HobbyligaRules.createSnapshot(state));
+    } else {
+      fixture.rulesSnapshot = null;
+    }
     fixture.status = fixture.confirmed ? "released" : "submitted";
     calculateFixture(fixture, rulesForFixture(fixture));
     rebuildFines();
@@ -2395,7 +2384,7 @@ document.addEventListener("submit", (event) => {
       autoConfirmResults: $("#autoConfirmResults").checked,
       provisionalResults: $("#provisionalResults").checked,
     });
-    state.fixtures.forEach((fixture) => fixture.saved && !fixture.confirmed && calculateFixture(fixture, currentRulesSnapshot()));
+    state.fixtures.forEach((fixture) => fixture.saved && !fixture.confirmed && calculateFixture(fixture, window.HobbyligaRules.createSnapshot(state)));
     rebuildFines();
     saveState("Liga gespeichert");
   }
@@ -2412,10 +2401,10 @@ document.addEventListener("submit", (event) => {
       window.HobbyligaResults.setScore(fixture, gameNumber, playerId, { gross: parsed, handicap: 0, net: parsed });
     }
     fixture.saved = true;
-    fixture.confirmed = state.league.autoConfirmResults;
+    fixture.confirmed = window.HobbyligaRules.isAutoConfirmEnabled(state);
     fixture.status = fixture.confirmed ? "released" : "submitted";
-    fixture.rulesSnapshot = currentRulesSnapshot();
-    calculateFixture(fixture, fixture.rulesSnapshot);
+    window.HobbyligaRules.setRulesSnapshot(fixture, window.HobbyligaRules.createSnapshot(state));
+    calculateFixture(fixture, window.HobbyligaRules.getRulesSnapshot(fixture));
     rebuildFines();
     saveState("Ergebnis gespeichert");
   }
@@ -2469,8 +2458,8 @@ document.addEventListener("submit", (event) => {
     fixture.teamSubmissions[player.teamId] = { submittedBy: activeUser().id, submittedAt: new Date().toISOString() };
     fixture.submittedBy = activeUser().id;
     fixture.submittedAt = new Date().toISOString();
-    fixture.rulesSnapshot = currentRulesSnapshot();
-    calculateFixture(fixture, fixture.rulesSnapshot);
+    window.HobbyligaRules.setRulesSnapshot(fixture, window.HobbyligaRules.createSnapshot(state));
+    calculateFixture(fixture, window.HobbyligaRules.getRulesSnapshot(fixture));
     addSystemNews("Neue Ergebnisse eingereicht", `${teamById(player.teamId).name} hat Ergebnisse für Spieltag ${fixture.day} eingereicht.`, "league");
     window.HobbyligaState.persist();
     const bothSubmitted = fixture.teamSubmissions[fixture.homeTeamId] && fixture.teamSubmissions[fixture.awayTeamId];
