@@ -482,7 +482,7 @@ function generateSchedule(teams, gamesPerMatch = state?.league?.gamesPerMatch ||
 }
 
 function teamById(id) {
-  return state.teams.find((team) => team.id === id);
+  return window.HobbyligaTeams.findById(state, id);
 }
 
 function playerById(id) {
