@@ -835,6 +835,7 @@ function render() {
     renderLogin();
     return;
   }
+  const league = window.HobbyligaLeague.get(state);
   document.body.classList.add("is-authenticated");
   $(".app-shell").classList.remove("hidden");
   $("#loginScreen")?.classList.add("hidden");
@@ -846,7 +847,7 @@ function render() {
   };
   const title = pageTitles[currentView] || navItems.find(([id]) => id === currentView)?.[2] || "Dashboard";
   $("#pageTitle").textContent = title;
-  $("#eyebrow").textContent = `${state.league.name} · ${state.league.season}`;
+  $("#eyebrow").textContent = `${league.name} · ${window.HobbyligaLeague.getSeasonName(state)}`;
   const view = $("#view");
   view.innerHTML = "";
   const routes = {
@@ -949,6 +950,7 @@ function renderDashboard() {
 function renderAdminDashboard() {
   rebuildFines();
   const user = activeUser();
+  const league = window.HobbyligaLeague.get(state);
   const todayFixtures = dashboardGameDayFixtures();
   const nextFixture = nextOpenFixture();
   const openFines = state.fines.filter((fine) => !fine.paid);
@@ -956,9 +958,9 @@ function renderAdminDashboard() {
   wrap.innerHTML = `
     <div class="dashboard-welcome">
       <div>
-        <p class="eyebrow">${state.league.season}</p>
+        <p class="eyebrow">${window.HobbyligaLeague.getSeasonName(state)}</p>
         <h2>Hallo ${user.name}</h2>
-        <p>${state.league.name} · ${state.league.venue}</p>
+        <p>${league.name} · ${league.venue}</p>
       </div>
     </div>
     <div class="section grid cols-2">
@@ -1577,20 +1579,21 @@ function playerHistoryHtml(scores) {
 }
 
 function renderLeague() {
+  const league = window.HobbyligaLeague.get(state);
   const wrap = el("div");
   wrap.innerHTML = `
     <div class="grid cols-3">
-      ${stat("Liga", state.league.name)}
-      ${stat("Saison", state.league.season)}
-      ${stat("Spielmodus", state.league.mode)}
+      ${stat("Liga", league.name)}
+      ${stat("Saison", window.HobbyligaLeague.getSeasonName(state))}
+      ${stat("Spielmodus", league.mode)}
     </div>
     <div class="section panel">
       <h2>Liga bearbeiten</h2>
       <form id="leagueForm" class="grid">
         <div class="form-row">
-          ${field("Name", "leagueName", state.league.name)}
-          ${field("Saison", "leagueSeason", state.league.season)}
-          ${field("Center", "leagueVenue", state.league.venue)}
+          ${field("Name", "leagueName", league.name)}
+          ${field("Saison", "leagueSeason", league.season)}
+          ${field("Center", "leagueVenue", league.venue)}
         </div>
         <div class="form-row">
           ${field("Handicap Basis", "handicapBase", state.league.handicapBase, "number")}
@@ -1601,7 +1604,7 @@ function renderLeague() {
         <div class="form-row">
           ${field("Strafgrenze Spieler-Pins", "fineLimit", state.league.fineLimit, "number")}
           ${field("Strafbetrag (€)", "fineAmount", state.league.fineAmount, "number", "0.01")}
-          ${field("Spiele pro Spieltag", "gamesPerMatch", state.league.gamesPerMatch, "number")}
+          ${field("Spiele pro Spieltag", "gamesPerMatch", window.HobbyligaLeague.getGamesPerMatch(state), "number")}
           ${field("Spieler pro Team", "playersPerTeam", state.league.playersPerTeam, "number")}
         </div>
         <div class="form-row">
@@ -1637,7 +1640,7 @@ function renderSchedule() {
   const wrap = el("div");
   wrap.innerHTML = canAdmin()
     ? `<div class="toolbar"><button class="primary-button" data-action="regen-schedule">Spielplan neu erstellen</button><span class="pill warn">Hinrunde und Rückrunde mit Heim-/Auswärtstausch</span></div>`
-    : `<div class="dashboard-welcome"><div><p class="eyebrow">${state.league.season}</p><h2>Spielplan</h2><p>Alle Teams, alle Begegnungen, Ergebnisse und Status.</p></div></div>`;
+    : `<div class="dashboard-welcome"><div><p class="eyebrow">${window.HobbyligaLeague.getSeasonName(state)}</p><h2>Spielplan</h2><p>Alle Teams, alle Begegnungen, Ergebnisse und Status.</p></div></div>`;
   days.forEach((day) => {
     const fixtures = state.fixtures.filter((fixture) => fixture.day === day);
     const section = el("section", "section");
@@ -2369,26 +2372,29 @@ document.addEventListener("submit", (event) => {
   }
   if (event.target.id === "leagueForm") {
     if (!canAdmin()) return toast("Nur Ligaleiter dürfen Liga-Daten ändern");
-    state.league.name = $("#leagueName").value.trim();
-    state.league.season = $("#leagueSeason").value.trim();
-    state.league.venue = $("#leagueVenue").value.trim();
-    state.league.handicapBase = Number($("#handicapBase").value);
-    state.league.handicapFactor = Number($("#handicapFactor").value);
-    state.league.handicapMin = Number($("#handicapMin").value);
-    state.league.handicapMax = Number($("#handicapMax").value);
-    state.league.fineLimit = Number($("#fineLimit").value);
-    state.league.fineAmount = Number($("#fineAmount").value);
-    state.league.finePerPlayer = state.league.fineAmount;
-    state.league.gamesPerMatch = Number($("#gamesPerMatch").value);
-    state.league.playersPerTeam = Number($("#playersPerTeam").value);
-    state.league.pointsPerGameWin = Number($("#pointsPerGameWin").value);
-    state.league.pointsPerGameTie = Number($("#pointsPerGameTie").value);
-    state.league.pointsTotalWin = Number($("#pointsTotalWin").value);
-    state.league.pointsTotalTie = Number($("#pointsTotalTie").value);
-    state.league.tableSort = $("#tableSort").value;
-    state.league.handicapEnabled = $("#handicapEnabled").checked;
-    state.league.autoConfirmResults = $("#autoConfirmResults").checked;
-    state.league.provisionalResults = $("#provisionalResults").checked;
+    const fineAmount = Number($("#fineAmount").value);
+    window.HobbyligaLeague.update(state, {
+      name: $("#leagueName").value.trim(),
+      season: $("#leagueSeason").value.trim(),
+      venue: $("#leagueVenue").value.trim(),
+      handicapBase: Number($("#handicapBase").value),
+      handicapFactor: Number($("#handicapFactor").value),
+      handicapMin: Number($("#handicapMin").value),
+      handicapMax: Number($("#handicapMax").value),
+      fineLimit: Number($("#fineLimit").value),
+      fineAmount,
+      finePerPlayer: fineAmount,
+      gamesPerMatch: Number($("#gamesPerMatch").value),
+      playersPerTeam: Number($("#playersPerTeam").value),
+      pointsPerGameWin: Number($("#pointsPerGameWin").value),
+      pointsPerGameTie: Number($("#pointsPerGameTie").value),
+      pointsTotalWin: Number($("#pointsTotalWin").value),
+      pointsTotalTie: Number($("#pointsTotalTie").value),
+      tableSort: $("#tableSort").value,
+      handicapEnabled: $("#handicapEnabled").checked,
+      autoConfirmResults: $("#autoConfirmResults").checked,
+      provisionalResults: $("#provisionalResults").checked,
+    });
     state.fixtures.forEach((fixture) => fixture.saved && !fixture.confirmed && calculateFixture(fixture, currentRulesSnapshot()));
     rebuildFines();
     saveState("Liga gespeichert");
