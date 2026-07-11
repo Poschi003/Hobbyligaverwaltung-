@@ -408,6 +408,106 @@ h3 {
   width: 100%;
 }
 
+.team-members {
+  margin: 0 0 18px;
+  color: #f8fbff;
+}
+
+.team-members h2 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 1.06rem;
+  line-height: 1.2;
+}
+
+.team-members-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 4px 2px 7px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.team-members-row::-webkit-scrollbar {
+  display: none;
+}
+
+.team-member {
+  position: relative;
+  flex: 0 0 60px;
+  min-width: 60px;
+  min-height: 92px;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 5px;
+  padding: 0;
+  color: #dfe8f5;
+  background: transparent;
+  border: 0;
+  border-radius: 10px;
+}
+
+.team-member:focus-visible {
+  outline: 2px solid #3ca8ff;
+  outline-offset: 4px;
+}
+
+.team-member-avatar {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #f3f9ff;
+  background: linear-gradient(145deg, #163c67, #0a1a31);
+  border: 2px solid #348fe0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(37, 137, 235, 0.1), 0 0 16px rgba(40, 146, 255, 0.28);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.team-member.is-current .team-member-avatar {
+  border-color: #5db8ff;
+  box-shadow: 0 0 0 4px rgba(47, 153, 255, 0.16), 0 0 20px rgba(49, 157, 255, 0.48);
+}
+
+.team-member-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-member-name {
+  width: 100%;
+  overflow: hidden;
+  color: #d9e4f2;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-member-you {
+  margin-top: -3px;
+  color: #5db8ff;
+  font-size: 0.64rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.team-members-empty p {
+  margin: 0;
+  color: #9babbf;
+  font-size: 0.85rem;
+}
+
 .player-profile-placeholder {
   width: 88px;
   height: 88px;
