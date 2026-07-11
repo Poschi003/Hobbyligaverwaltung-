@@ -883,6 +883,35 @@ function renderAdminDashboard() {
   return wrap;
 }
 
+function teamLogoFor(team) {
+  if (!team) return "";
+  if (typeof team.logo === "string" && team.logo.trim()) return team.logo;
+
+  const logoPaths = {
+    splities: "assets/team-logos/splittys.png",
+    splittys: "assets/team-logos/splittys.png",
+    sparebears: "assets/team-logos/spare-bears.png",
+    labowling: "assets/team-logos/la-bowling.png",
+    crazyballs: "assets/team-logos/crazy-balls.png",
+    strikehungrywolves: "assets/team-logos/strike-hungry-wolves.png",
+    flyingpins: "assets/team-logos/flying-pins.png",
+    zefixfoium: "assets/team-logos/zefix-foi-um.png",
+    pinupgirls: "assets/team-logos/pinup-girls.png",
+    daarmandopizza: "assets/team-logos/da-armando-pizza.png",
+    pinbreakers: "assets/team-logos/pinbreakers.png",
+  };
+  const normalizeLogoName = (value) => String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+
+  return [team.name, team.shortName, team.id]
+    .map(normalizeLogoName)
+    .map((key) => logoPaths[key])
+    .find(Boolean) || "";
+}
+
 function renderPlayerDashboard() {
   const player = currentPlayer();
   const wrap = el("div");
@@ -937,8 +966,9 @@ function renderPlayerDashboard() {
         </div>
       </section>`
     : `<section class="team-members team-members-empty" aria-labelledby="teamMembersTitle"><h2 id="teamMembersTitle">Teammitglieder</h2><p>${player.teamId ? "Noch keine weiteren Teammitglieder." : "Noch keinem Team zugeordnet."}</p></section>`;
-  const teamLogo = team?.logo
-    ? `<img class="player-team-logo" src="${team.logo}" alt="" />`
+  const teamLogoUrl = teamLogoFor(team);
+  const teamLogo = teamLogoUrl
+    ? `<img class="player-team-logo" src="${escapeHtml(teamLogoUrl)}" alt="" />`
     : `<svg class="player-team-logo player-team-logo-placeholder" viewBox="0 0 240 240" aria-label="Bowling-Silhouette" role="img" focusable="false"><circle cx="74" cy="145" r="50" fill="currentColor" opacity=".72"/><circle cx="58" cy="128" r="6" fill="#050b15"/><circle cx="80" cy="117" r="6" fill="#050b15"/><circle cx="94" cy="139" r="6" fill="#050b15"/><path d="M145 45c15 0 24 12 24 29v48c0 18-9 30-24 30s-24-12-24-30V74c0-17 9-29 24-29Zm38 14c13 0 21 11 21 26v37c0 16-8 26-21 26s-21-10-21-26V85c0-15 8-26 21-26Zm-28 101h43l14 41h-71l14-41Z" fill="currentColor" opacity=".9"/></svg>`;
 
   wrap.innerHTML = `
