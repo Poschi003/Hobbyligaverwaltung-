@@ -994,7 +994,7 @@ function renderPlayerDashboard() {
     : [];
   const teamMembersHtml = player.teamId && teamMembers.length
     ? `<section class="team-members" aria-labelledby="teamMembersTitle">
-        <h2 id="teamMembersTitle">Teammitglieder</h2>
+        <h2 id="teamMembersTitle">Team</h2>
         <div class="team-members-row">
           ${teamMembers.map((member) => {
             const fullName = member.name || "Unbekannter Spieler";
@@ -1011,15 +1011,15 @@ function renderPlayerDashboard() {
           }).join("")}
         </div>
       </section>`
-    : `<section class="team-members team-members-empty" aria-labelledby="teamMembersTitle"><h2 id="teamMembersTitle">Teammitglieder</h2><p>${player.teamId ? "Noch keine weiteren Teammitglieder." : "Noch keinem Team zugeordnet."}</p></section>`;
+    : `<section class="team-members team-members-empty" aria-labelledby="teamMembersTitle"><h2 id="teamMembersTitle">Team</h2><p>${player.teamId ? "Noch keine weiteren Teammitglieder." : "Noch keinem Team zugeordnet."}</p></section>`;
   const teamLogoUrl = teamLogoFor(team);
   const teamLogo = teamLogoUrl
-    ? `<img class="player-team-logo" src="${escapeHtml(teamLogoUrl)}" alt="" />`
+    ? `<img class="player-team-logo" src="${escapeHtml(teamLogoUrl)}" alt="Teamlogo ${escapeHtml(teamLabel)}" />`
     : `<svg class="player-team-logo player-team-logo-placeholder" viewBox="0 0 240 240" aria-label="Bowling-Silhouette" role="img" focusable="false"><circle cx="74" cy="145" r="50" fill="currentColor" opacity=".72"/><circle cx="58" cy="128" r="6" fill="#050b15"/><circle cx="80" cy="117" r="6" fill="#050b15"/><circle cx="94" cy="139" r="6" fill="#050b15"/><path d="M145 45c15 0 24 12 24 29v48c0 18-9 30-24 30s-24-12-24-30V74c0-17 9-29 24-29Zm38 14c13 0 21 11 21 26v37c0 16-8 26-21 26s-21-10-21-26V85c0-15 8-26 21-26Zm-28 101h43l14 41h-71l14-41Z" fill="currentColor" opacity=".9"/></svg>`;
 
   wrap.innerHTML = `
     <div class="player-dashboard-screen">
-      <section class="player-dashboard-head" aria-label="Spielerprofil">
+      <section class="player-dashboard-head" aria-label="Spielerprofil von ${escapeHtml(player.name)}, Team ${escapeHtml(teamLabel)}">
         <div class="player-profile-placeholder" aria-label="Profilbild-Platzhalter">${profileInitials || "?"}</div>
         <div class="player-profile-copy">
           <h2>${player.name}</h2>
