@@ -410,6 +410,7 @@ h3 {
 
 .team-members {
   margin: 0 0 18px;
+  padding: 0 20px;
   color: #f8fbff;
 }
 
@@ -428,6 +429,13 @@ h3 {
   padding: 4px 2px 7px;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
+}
+
+.team-members-row:has(> .team-member:only-child),
+.team-members-row:has(> .team-member:nth-child(2):last-child),
+.team-members-row:has(> .team-member:nth-child(3):last-child),
+.team-members-row:has(> .team-member:nth-child(4):last-child) {
+  justify-content: space-between;
 }
 
 .team-members-row::-webkit-scrollbar {
