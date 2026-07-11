@@ -546,33 +546,11 @@ function lineupForTeam(teamId, playersPerTeam = state.league.playersPerTeam || 3
 }
 
 function allPlayerGameScores(untilFixtureId = null) {
-  const rows = [];
-  for (const fixture of state.fixtures) {
-    if (!fixture.saved || !fixture.confirmed) continue;
-    if (untilFixtureId && fixture.id === untilFixtureId) continue;
-    for (const game of fixture.games) {
-      Object.entries(game.scores).forEach(([playerId, score]) => {
-        if (Number.isFinite(score.gross)) {
-          rows.push({ fixtureId: fixture.id, day: fixture.day, playerId, gross: score.gross });
-        }
-      });
-    }
-  }
-  return rows;
+  return window.HobbyligaStatistics.getPlayerScores(state, null, untilFixtureId);
 }
 
 function playerStats(playerId, untilFixtureId = null) {
-  const player = playerById(playerId);
-  const baseline = player?.initialStats || { games: 0, pins: 0, high: 0 };
-  const scores = allPlayerGameScores(untilFixtureId).filter((row) => row.playerId === playerId);
-  const games = baseline.games + scores.length;
-  const pins = baseline.pins + scores.reduce((sum, row) => sum + row.gross, 0);
-  const average = games ? pins / games : 0;
-  const valid = games >= 3;
-  const rawHandicap = Math.round((state.league.handicapBase - average) * state.league.handicapFactor);
-  const handicap = valid ? clamp(rawHandicap, state.league.handicapMin, state.league.handicapMax) : null;
-  const high = scores.reduce((max, row) => Math.max(max, row.gross), baseline.high || 0);
-  return { games, pins, average, valid, handicap, high };
+  return window.HobbyligaStatistics.getPlayerStats(state, playerId, untilFixtureId);
 }
 
 function playerHandicapForRules(playerId, untilFixtureId, rules) {
@@ -747,16 +725,7 @@ function standings(includeSubmitted = false) {
 }
 
 function leadersByGender(gender) {
-  const players = state.players.filter((player) => player.gender === gender);
-  const average = players
-    .map((player) => ({ player, team: teamById(player.teamId), stats: playerStats(player.id) }))
-    .filter((row) => row.stats.valid)
-    .sort((a, b) => b.stats.average - a.stats.average);
-  const highs = players
-    .map((player) => ({ player, team: teamById(player.teamId), high: playerStats(player.id).high }))
-    .filter((row) => row.high > 0)
-    .sort((a, b) => b.high - a.high);
-  return { average, highs };
+  return window.HobbyligaStatistics.getLeadersByGender(state, gender);
 }
 
 function render() {
@@ -1085,10 +1054,7 @@ function statInner(label, value) {
 }
 
 function playerRank(playerId) {
-  const ranking = state.players
-    .map((player) => ({ player, stats: playerStats(player.id) }))
-    .filter((row) => row.stats.valid)
-    .sort((a, b) => b.stats.average - a.stats.average || a.player.name.localeCompare(b.player.name));
+  const ranking = window.HobbyligaStatistics.getPlayerRanking(state);
   const index = ranking.findIndex((row) => row.player.id === playerId);
   return index >= 0 ? index + 1 : null;
 }
@@ -1128,10 +1094,9 @@ function playerDashboardPanelHtml(panel, player, fixture, openFines, table) {
     return `<div class="section panel dashboard-detail"><div class="match-title"><h2>Strafgeld-Details</h2><button class="ghost-button" data-action="dashboard-panel" data-panel="">Schließen</button></div>${openFines.length ? openFines.map(fineDetailHtml).join("") : emptyHtml("Keine offenen Strafgelder", "Für dich ist aktuell nichts offen.")}</div>`;
   }
   if (panel === "ranking") {
-    const rows = state.players
-      .map((item) => ({ player: item, team: teamById(item.teamId), stats: playerStats(item.id) }))
-      .filter((row) => row.stats.valid)
-      .sort((a, b) => b.stats.average - a.stats.average || a.player.name.localeCompare(b.player.name))
+    const rows = window.HobbyligaStatistics
+      .getPlayerRanking(state)
+      .map((row) => ({ ...row, team: teamById(row.player.teamId) }))
       .slice(0, 12);
     return `<div class="section panel dashboard-detail"><div class="match-title"><h2>Rangliste Schnitt</h2><button class="ghost-button" data-action="dashboard-panel" data-panel="">Schließen</button></div><div class="table-wrap"><table><thead><tr><th>Platz</th><th>Spieler</th><th>Team</th><th>Schnitt</th><th>Bestes Spiel</th></tr></thead><tbody>${rows.map((row, index) => `<tr class="${row.player.id === player.id ? "highlight-row" : ""}"><td>${index + 1}</td><td>${row.player.name}</td><td>${row.team?.name || "-"}</td><td>${row.stats.average.toFixed(1)}</td><td>${row.stats.high || "-"}</td></tr>`).join("")}</tbody></table></div></div>`;
   }
