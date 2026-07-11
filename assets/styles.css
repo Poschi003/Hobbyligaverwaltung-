@@ -103,9 +103,20 @@ body.is-player-app .player-dashboard-head {
   margin-bottom: var(--space-5);
   min-height: 200px;
   padding: 18px;
-  display: flex;
-  align-items: flex-end;
-  gap: 12px;
+  display: block;
+}
+
+body.is-player-app .player-profile-copy {
+  position: absolute;
+  top: 20px;
+  left: 18px;
+  max-width: calc(100% - 132px);
+}
+
+body.is-player-app .player-profile-placeholder {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
 }
 
 body.is-player-app .player-profile-placeholder {
@@ -115,7 +126,7 @@ body.is-player-app .player-profile-placeholder {
 }
 
 body.is-player-app .player-profile-copy h2 {
-  font-size: clamp(1.12rem, 5.4vw, 1.25rem);
+  font-size: clamp(1.15rem, 5.6vw, 1.35rem);
 }
 
 body.is-player-app .player-motivation {

@@ -1023,8 +1023,6 @@ function renderPlayerDashboard() {
         <div class="player-profile-placeholder" aria-label="Profilbild-Platzhalter">${profileInitials || "?"}</div>
         <div class="player-profile-copy">
           <h2>${player.name}</h2>
-          <p class="player-motivation">Dein nächster Strike wartet schon.</p>
-          <p class="player-team-line"><svg class="player-team-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.1"></circle><circle cx="17.2" cy="9.2" r="2.5"></circle><path d="M3.7 19.2c.6-3.2 2.7-5.1 5.3-5.1s4.7 1.9 5.3 5.1M14.3 18.7c.4-2.3 1.8-3.9 3.9-3.9 1.1 0 2.1.4 2.8 1.1"></path></svg>${teamLabel}</p>
         </div>
         <div class="player-team-logo-wrap">${teamLogo}</div>
       </section>
