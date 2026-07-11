@@ -377,9 +377,9 @@ h3 {
 
 .player-dashboard-head {
   width: min(100%, 430px);
-  min-height: 184px;
-  margin: 0 auto 18px;
-  padding: 24px 20px;
+  min-height: 176px;
+  margin: 0 auto 16px;
+  padding: 22px 20px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -388,11 +388,11 @@ h3 {
   overflow: hidden;
   color: #f8fbff;
   background:
-    radial-gradient(circle at 92% 50%, rgba(24, 145, 255, 0.2), transparent 34%),
-    linear-gradient(145deg, #060b16 0%, #0a1426 58%, #0e2340 100%);
-  border: 1px solid rgba(72, 163, 255, 0.28);
-  border-radius: 24px;
-  box-shadow: 0 20px 42px rgba(2, 10, 25, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    radial-gradient(circle at 90% 48%, rgba(24, 145, 255, 0.14), transparent 44%),
+    linear-gradient(105deg, #050b15 0%, #07111f 64%, #0a1b31 100%);
+  border: 1px solid rgba(89, 166, 255, 0.1);
+  border-radius: 14px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
 }
 
 .player-dashboard-screen {
@@ -428,6 +428,7 @@ h3 {
   min-width: 0;
   position: relative;
   z-index: 1;
+  text-shadow: 0 1px 10px rgba(1, 6, 15, 0.6);
 }
 
 .player-profile-copy h2 {
@@ -460,22 +461,32 @@ h3 {
 }
 
 .player-team-icon {
-  color: #39a5ff;
-  font-size: 0.72rem;
-  text-shadow: 0 0 10px rgba(57, 165, 255, 0.8);
+  width: 17px;
+  height: 17px;
+  flex: 0 0 auto;
+  fill: #3ca8ff;
+  stroke: #3ca8ff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  filter: drop-shadow(0 0 6px rgba(57, 165, 255, 0.65));
+}
+
+.player-team-icon path {
+  fill: none;
 }
 
 .player-team-logo-wrap {
   position: absolute;
-  right: -8px;
+  right: -50px;
   top: 50%;
   z-index: 0;
   display: grid;
   place-items: center;
-  width: 126px;
-  height: 126px;
+  width: 204px;
+  height: 204px;
   transform: translateY(-50%);
-  opacity: 0.22;
+  opacity: 0.14;
   pointer-events: none;
 }
 
@@ -487,14 +498,7 @@ h3 {
 }
 
 .player-team-logo-placeholder {
-  display: grid;
-  place-items: center;
   color: #8bcaff;
-  border: 2px dashed rgba(102, 190, 255, 0.78);
-  border-radius: 32px;
-  background: rgba(41, 131, 213, 0.13);
-  font-size: 1.6rem;
-  font-weight: 900;
 }
 
 .dashboard-greeting {
@@ -1347,7 +1351,7 @@ tr:last-child td {
 
   .player-dashboard-head {
     width: min(100%, 430px);
-    min-height: 174px;
+    min-height: 168px;
     margin-bottom: 16px;
     padding: 20px 16px;
     grid-template-columns: 76px minmax(0, 1fr);
@@ -1384,9 +1388,9 @@ tr:last-child td {
   }
 
   .player-team-logo-wrap {
-    right: -24px;
-    width: 112px;
-    height: 112px;
+    right: -62px;
+    width: 188px;
+    height: 188px;
   }
 
   .team-visual.hero {

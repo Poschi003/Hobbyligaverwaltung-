@@ -908,7 +908,7 @@ function renderPlayerDashboard() {
   const teamLabel = team?.name || "Ohne Team";
   const teamLogo = team?.logo
     ? `<img class="player-team-logo" src="${team.logo}" alt="" />`
-    : `<span class="player-team-logo player-team-logo-placeholder" aria-label="Teamlogo folgt">${(team?.shortName || teamLabel).slice(0, 2).toUpperCase()}</span>`;
+    : `<svg class="player-team-logo player-team-logo-placeholder" viewBox="0 0 240 240" aria-label="Bowling-Silhouette" role="img" focusable="false"><circle cx="74" cy="145" r="50" fill="currentColor" opacity=".72"/><circle cx="58" cy="128" r="6" fill="#050b15"/><circle cx="80" cy="117" r="6" fill="#050b15"/><circle cx="94" cy="139" r="6" fill="#050b15"/><path d="M145 45c15 0 24 12 24 29v48c0 18-9 30-24 30s-24-12-24-30V74c0-17 9-29 24-29Zm38 14c13 0 21 11 21 26v37c0 16-8 26-21 26s-21-10-21-26V85c0-15 8-26 21-26Zm-28 101h43l14 41h-71l14-41Z" fill="currentColor" opacity=".9"/></svg>`;
 
   wrap.innerHTML = `
     <div class="player-dashboard-screen">
@@ -917,7 +917,7 @@ function renderPlayerDashboard() {
         <div class="player-profile-copy">
           <h2>${player.name}</h2>
           <p class="player-motivation">Dein nächster Strike wartet schon.</p>
-          <p class="player-team-line"><span class="player-team-icon" aria-hidden="true">●</span>${teamLabel}</p>
+          <p class="player-team-line"><svg class="player-team-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.1"></circle><circle cx="17.2" cy="9.2" r="2.5"></circle><path d="M3.7 19.2c.6-3.2 2.7-5.1 5.3-5.1s4.7 1.9 5.3 5.1M14.3 18.7c.4-2.3 1.8-3.9 3.9-3.9 1.1 0 2.1.4 2.8 1.1"></path></svg>${teamLabel}</p>
         </div>
         <div class="player-team-logo-wrap">${teamLogo}</div>
       </section>
