@@ -376,7 +376,125 @@ h3 {
 }
 
 .player-dashboard-head {
-  gap: 18px;
+  width: min(100%, 430px);
+  min-height: 184px;
+  margin: 0 auto 18px;
+  padding: 24px 20px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  color: #f8fbff;
+  background:
+    radial-gradient(circle at 92% 50%, rgba(24, 145, 255, 0.2), transparent 34%),
+    linear-gradient(145deg, #060b16 0%, #0a1426 58%, #0e2340 100%);
+  border: 1px solid rgba(72, 163, 255, 0.28);
+  border-radius: 24px;
+  box-shadow: 0 20px 42px rgba(2, 10, 25, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.player-dashboard-screen {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 10px 0 24px;
+  background: #050b15;
+  border-radius: 28px;
+}
+
+.player-dashboard-screen .dashboard-grid {
+  width: 100%;
+}
+
+.player-profile-placeholder {
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  color: #eef8ff;
+  background: linear-gradient(145deg, #163c67, #0c1c35);
+  border: 3px solid #38a4ff;
+  box-shadow: 0 0 0 5px rgba(35, 139, 235, 0.12), 0 0 24px rgba(33, 145, 255, 0.36);
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.player-profile-copy {
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.player-profile-copy h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.42rem, 7vw, 1.9rem);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.player-motivation {
+  max-width: 220px;
+  margin: 7px 0 12px;
+  color: #c7d1df;
+  font-size: 0.83rem;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+.player-team-line {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  margin: 0;
+  color: #f4f8ff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.player-team-icon {
+  color: #39a5ff;
+  font-size: 0.72rem;
+  text-shadow: 0 0 10px rgba(57, 165, 255, 0.8);
+}
+
+.player-team-logo-wrap {
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  width: 126px;
+  height: 126px;
+  transform: translateY(-50%);
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+.player-team-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.player-team-logo-placeholder {
+  display: grid;
+  place-items: center;
+  color: #8bcaff;
+  border: 2px dashed rgba(102, 190, 255, 0.78);
+  border-radius: 32px;
+  background: rgba(41, 131, 213, 0.13);
+  font-size: 1.6rem;
+  font-weight: 900;
 }
 
 .dashboard-greeting {
@@ -1221,20 +1339,54 @@ tr:last-child td {
     grid-template-columns: 1fr;
   }
 
-  .dashboard-welcome,
-  .player-dashboard-head {
+  .dashboard-welcome {
     align-items: flex-start;
     flex-direction: column;
     padding: 18px;
   }
 
-  .dashboard-greeting {
-    width: 100%;
+  .player-dashboard-head {
+    width: min(100%, 430px);
+    min-height: 174px;
+    margin-bottom: 16px;
+    padding: 20px 16px;
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 13px;
   }
 
-  .dashboard-logo {
-    width: min(58vw, 190px);
-    max-height: 76px;
+  .player-dashboard-screen {
+    width: auto;
+    max-width: none;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 10px 16px 24px;
+    border-radius: 0;
+  }
+
+  .player-profile-placeholder {
+    width: 76px;
+    height: 76px;
+    font-size: 1.12rem;
+  }
+
+  .player-profile-copy h2 {
+    font-size: clamp(1.28rem, 7vw, 1.7rem);
+  }
+
+  .player-motivation {
+    margin-top: 6px;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+  }
+
+  .player-team-line {
+    font-size: 0.82rem;
+  }
+
+  .player-team-logo-wrap {
+    right: -24px;
+    width: 112px;
+    height: 112px;
   }
 
   .team-visual.hero {

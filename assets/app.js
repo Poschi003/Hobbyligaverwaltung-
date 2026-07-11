@@ -904,16 +904,23 @@ function renderPlayerDashboard() {
   const news = visibleNews().filter((item) => !["Handicap-Regel aktiv", "Saison 2025/26 importiert"].includes(item.title)).slice(0, 4);
   const nextFixtureAction = nextFixture ? `data-action="open-fixture-day" data-id="${nextFixture.id}"` : "";
 
+  const profileInitials = player.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const teamLabel = team?.name || "Ohne Team";
+  const teamLogo = team?.logo
+    ? `<img class="player-team-logo" src="${team.logo}" alt="" />`
+    : `<span class="player-team-logo player-team-logo-placeholder" aria-label="Teamlogo folgt">${(team?.shortName || teamLabel).slice(0, 2).toUpperCase()}</span>`;
+
   wrap.innerHTML = `
-    <div class="dashboard-welcome player-dashboard-head">
-      <div class="dashboard-greeting">
-        <img class="dashboard-logo" src="assets/la-bowling-hobbyliga-logo.png?v=19" alt="LA-Bowling Hobbyliga" />
-        <div>
-          <p class="eyebrow">${team?.name || "Ohne Team"}</p>
-          <h2>Hallo ${player.name}</h2>
+    <div class="player-dashboard-screen">
+      <section class="player-dashboard-head" aria-label="Spielerprofil">
+        <div class="player-profile-placeholder" aria-label="Profilbild-Platzhalter">${profileInitials || "?"}</div>
+        <div class="player-profile-copy">
+          <h2>${player.name}</h2>
+          <p class="player-motivation">Dein nächster Strike wartet schon.</p>
+          <p class="player-team-line"><span class="player-team-icon" aria-hidden="true">●</span>${teamLabel}</p>
         </div>
-      </div>
-    </div>
+        <div class="player-team-logo-wrap">${teamLogo}</div>
+      </section>
     <div class="section dashboard-grid">
       <button class="panel dashboard-card primary-card fixture-tile" ${nextFixtureAction}>
         <div class="match-title">
@@ -947,6 +954,7 @@ function renderPlayerDashboard() {
       </div>
     </div>
     ${dashboardPanel ? playerDashboardPanelHtml(dashboardPanel, player, nextFixture, openFines, table) : ""}
+    </div>
   `;
   return wrap;
 }
