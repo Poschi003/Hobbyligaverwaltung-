@@ -975,7 +975,7 @@ function renderPlayerDashboard() {
           ${dashboardStatIcon("trend-up", "blue")}
           <strong class="player-stat-value">${averageValue}</strong>
         </button>
-        <button class="player-stat-tile player-stat-tile--orange player-stat-tile--wide" type="button" data-action="dashboard-panel" data-panel="fines" aria-label="Offene Strafen: ${fineValue}. Strafgeld-Details öffnen.">
+        <button class="player-stat-tile player-stat-tile--orange player-stat-tile--fine player-stat-tile--wide ${openFines.length ? "has-open-fines" : ""}" type="button" data-action="dashboard-panel" data-panel="fines" aria-label="Offene Strafen: ${fineValue}. Strafgeld-Details öffnen.">
           <span class="player-stat-label">Strafe</span>
           ${dashboardStatIcon("alert-circle", "orange")}
           <strong class="player-stat-value ${openFines.length ? "" : "is-text"}">${fineValue}</strong>

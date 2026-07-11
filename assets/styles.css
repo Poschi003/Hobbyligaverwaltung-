@@ -557,6 +557,11 @@ button.player-stat-tile {
   min-height: 128px;
 }
 
+.player-stat-tile--fine.has-open-fines {
+  border-color: rgba(255, 179, 79, 0.7);
+  box-shadow: inset 0 1px 0 rgba(255, 225, 183, 0.1), 0 8px 18px rgba(0, 0, 0, 0.2), 0 0 12px rgba(255, 144, 54, 0.16);
+}
+
 .player-stat-tile:focus-visible {
   outline: 2px solid var(--stat-accent);
   outline-offset: 3px;
