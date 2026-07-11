@@ -803,6 +803,10 @@ button.player-stat-tile:active {
   text-shadow: 0 0 10px color-mix(in srgb, var(--stat-accent) 32%, transparent);
 }
 
+.player-stat-value--placement {
+  font-size: clamp(1.5rem, 6.6vw, 1.72rem);
+}
+
 .player-stat-value.is-text {
   font-size: clamp(0.96rem, 4.1vw, 1.06rem);
 }

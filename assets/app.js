@@ -900,8 +900,8 @@ function renderPlayerDashboard() {
   const tablePlace = table.findIndex((row) => row.team.id === player.teamId) + 1;
   const stats = playerStats(player.id);
   const rank = playerRank(player.id);
-  const rankingValue = rank ? `Platz ${rank}` : "-";
-  const teamPlaceValue = tablePlace ? `Platz ${tablePlace}` : "-";
+  const rankingValue = rank ? String(rank) : "-";
+  const teamPlaceValue = tablePlace ? String(tablePlace) : "-";
   const handicapValue = stats.valid ? String(stats.handicap) : "-";
   const averageValue = stats.valid ? stats.average.toFixed(1).replace(".", ",") : "n. v.";
   const fineValue = openFines.length ? `${openFineTotal.toFixed(2).replace(".", ",")} € offen` : "Keine offen";
@@ -957,12 +957,12 @@ function renderPlayerDashboard() {
         <button class="player-stat-tile player-stat-tile--orange" type="button" data-action="dashboard-panel" data-panel="ranking" aria-label="Ranglistenplatz: ${rankingValue}. Rangliste öffnen.">
           <span class="player-stat-label">Ranglistenplatz</span>
           ${dashboardStatIcon("trophy", "orange")}
-          <strong class="player-stat-value">${rankingValue}</strong>
+          <strong class="player-stat-value player-stat-value--placement">${rankingValue}</strong>
         </button>
         <button class="player-stat-tile player-stat-tile--blue" type="button" data-action="dashboard-panel" data-panel="table" aria-label="Teamplatz: ${teamPlaceValue}. Tabelle öffnen.">
           <span class="player-stat-label">Teamplatz</span>
           ${dashboardStatIcon("team", "blue")}
-          <strong class="player-stat-value">${teamPlaceValue}</strong>
+          <strong class="player-stat-value player-stat-value--placement">${teamPlaceValue}</strong>
         </button>
         <div class="player-stat-tile player-stat-tile--orange" aria-label="Handicap: ${handicapValue}">
           <span class="player-stat-label">Handicap</span>
