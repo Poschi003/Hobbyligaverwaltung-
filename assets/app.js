@@ -1118,7 +1118,7 @@ function playerRank(playerId) {
 function dashboardFixtureIcon(name, tone = "neutral") {
   const icons = {
     calendar: `<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h5"/>`,
-    lane: `<path d="M6 20 10 4M18 20 14 4M8 20h8"/><path d="M10.8 7h2.4M10 11h4M9 15h6"/>`,
+    lane: `<path d="M5 21 8.5 9h7L19 21M7 21h10M8.4 17h7.2M9.4 13h5.2"/><path d="M12 3c-1 .9-1.5 1.7-1.4 2.7.1.7.5 1 .5 1.8 0 .6-.3 1.2-.9 1.8h3.6c-.6-.6-.9-1.2-.9-1.8 0-.8.4-1.1.5-1.8.1-1-.4-1.8-1.4-2.7Z"/>`,
     "ranking-star": `<path d="m12 3 2.2 4.5 5 .7-3.6 3.5.8 5-4.4-2.3-4.4 2.3.8-5-3.6-3.5 5-.7L12 3Z"/>`,
     "chevron-right": `<path d="m9 5 7 7-7 7"/>`,
   };
