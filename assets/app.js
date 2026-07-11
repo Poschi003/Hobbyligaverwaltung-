@@ -734,11 +734,14 @@ function render() {
     return;
   }
   const league = window.HobbyligaLeague.get(state);
+  const isPlayerApp = activeUser()?.role === "player";
   document.body.classList.add("is-authenticated");
+  document.body.classList.toggle("is-player-app", isPlayerApp);
   $(".app-shell").classList.remove("hidden");
   $("#loginScreen")?.classList.add("hidden");
   guardView();
   renderNav();
+  renderPlayerBottomNav();
   renderUserPanel();
   const pageTitles = {
     playerFixtureDay: "Spieltag",
@@ -770,7 +773,7 @@ function render() {
 }
 
 function renderLogin() {
-  document.body.classList.remove("is-authenticated", "nav-open");
+  document.body.classList.remove("is-authenticated", "is-player-app", "nav-open");
   $(".app-shell").classList.add("hidden");
   let screen = $("#loginScreen");
   if (!screen) {
@@ -795,7 +798,7 @@ function renderLogin() {
 }
 
 function renderFirstLogin(user) {
-  document.body.classList.remove("is-authenticated", "nav-open");
+  document.body.classList.remove("is-authenticated", "is-player-app", "nav-open");
   $(".app-shell").classList.add("hidden");
   let screen = $("#loginScreen");
   if (!screen) {
@@ -910,6 +913,49 @@ function teamLogoFor(team) {
     .map(normalizeLogoName)
     .map((key) => logoPaths[key])
     .find(Boolean) || "";
+}
+
+function playerBottomNavIcon(name) {
+  const icons = {
+    dashboard: `<path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"/><path d="M9 20v-5h6v5"/>`,
+    matchday: `<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h5"/>`,
+    ranking: `<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9 20h6"/>`,
+    team: `<circle cx="8.5" cy="8" r="3"/><circle cx="16.8" cy="9.2" r="2.4"/><path d="M3.6 19c.6-3.1 2.6-5 4.9-5s4.4 1.9 5 5M14.2 18.7c.4-2.3 1.8-3.9 3.9-3.9 1.1 0 2.1.4 2.8 1.1"/>`,
+    profile: `<circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-4 3.2-6 7-6s6.2 2 7 6"/>`,
+  };
+  const icon = icons[name];
+  if (!icon) return "";
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${icon}</svg>`;
+}
+
+function renderPlayerBottomNav() {
+  const nav = $("#playerBottomNav");
+  if (!nav) return;
+  if (activeUser()?.role !== "player") {
+    nav.hidden = true;
+    nav.innerHTML = "";
+    return;
+  }
+
+  const dashboardPanel = sessionStorage.getItem("playerDashboardPanel") || "";
+  const activeId = currentView === "playerDashboard" && dashboardPanel === "ranking"
+    ? "ranking"
+    : ({ playerDashboard: "dashboard", playerFixtureDay: "matchday", upcomingGames: "team", playerStats: "profile" }[currentView] || "dashboard");
+  const items = [
+    { id: "dashboard", icon: "dashboard", label: "Dashboard", view: "playerDashboard" },
+    { id: "matchday", icon: "matchday", label: "Spieltag", view: "playerFixtureDay" },
+    { id: "ranking", icon: "ranking", label: "Rangliste", action: "dashboard-panel", panel: "ranking" },
+    { id: "team", icon: "team", label: "Team", view: "upcomingGames" },
+    { id: "profile", icon: "profile", label: "Profil", view: "playerStats" },
+  ];
+  nav.hidden = false;
+  nav.innerHTML = items.map((item) => {
+    const active = item.id === activeId ? " is-active" : "";
+    const target = item.view
+      ? `data-view="${item.view}"`
+      : `data-action="${item.action}" data-panel="${item.panel}"`;
+    return `<button class="player-bottom-nav-item${active}" type="button" ${target} aria-label="${item.label}"><span class="player-bottom-nav-icon">${playerBottomNavIcon(item.icon)}</span><span>${item.label}</span></button>`;
+  }).join("");
 }
 
 function renderPlayerDashboard() {
@@ -2153,7 +2199,8 @@ async function loginWithBiometric() {
 document.addEventListener("click", (event) => {
   const navButton = event.target.closest("[data-view]");
   if (navButton) {
-    if (!allowedNavItems().some(([id]) => id === navButton.dataset.view)) return;
+    const isPlayerFixtureView = navButton.dataset.view === "playerFixtureDay" && activeUser()?.role === "player";
+    if (!isPlayerFixtureView && !allowedNavItems().some(([id]) => id === navButton.dataset.view)) return;
     currentView = navButton.dataset.view;
     document.body.classList.remove("nav-open");
     render();
