@@ -12,7 +12,9 @@
   }
 
   function playersForTeam(state, teamId) {
-    return getPlayers(state).filter((player) => player.teamId === teamId);
+    return getPlayers(state).filter(
+      (player) => player.teamId === teamId && player.active
+    );
   }
 
   function lineupForTeam(state, teamId, playersPerTeam) {
