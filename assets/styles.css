@@ -609,25 +609,40 @@ button.player-stat-tile:active {
 }
 
 .stat-icon {
-  width: 31px;
-  height: 31px;
+  width: 34px;
+  height: 34px;
   display: inline-grid;
   place-items: center;
+  position: relative;
+  isolation: isolate;
+}
+
+.stat-icon::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+  background: currentColor;
+  filter: blur(8px);
+  opacity: 0.13;
 }
 
 .stat-icon svg {
   width: 100%;
   height: 100%;
+  stroke-width: 2.05px;
 }
 
 .stat-icon--blue {
-  color: #59b8ff;
-  filter: drop-shadow(0 0 7px rgba(69, 169, 255, 0.46));
+  color: #62c3ff;
+  filter: drop-shadow(0 0 2px rgba(132, 210, 255, 0.72)) drop-shadow(0 0 8px rgba(57, 165, 255, 0.46));
 }
 
 .stat-icon--orange {
-  color: #ffad5a;
-  filter: drop-shadow(0 0 7px rgba(255, 159, 67, 0.4));
+  color: #ffb34f;
+  filter: drop-shadow(0 0 2px rgba(255, 205, 126, 0.68)) drop-shadow(0 0 8px rgba(255, 144, 54, 0.42));
 }
 
 .player-profile-placeholder {
