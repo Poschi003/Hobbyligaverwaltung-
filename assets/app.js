@@ -907,7 +907,6 @@ function renderPlayerDashboard() {
   const fineValue = openFines.length ? `${openFineTotal.toFixed(2).replace(".", ",")} € offen` : "Keine offen";
   const dashboardPanel = sessionStorage.getItem("playerDashboardPanel") || "";
   const news = visibleNews().filter((item) => !["Handicap-Regel aktiv", "Saison 2025/26 importiert"].includes(item.title)).slice(0, 4);
-  const nextFixtureAction = nextFixture ? `data-action="open-fixture-day" data-id="${nextFixture.id}"` : "";
 
   const profileInitials = player.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   const teamLabel = team?.name || "Ohne Team";
@@ -981,13 +980,8 @@ function renderPlayerDashboard() {
           <strong class="player-stat-value ${openFines.length ? "" : "is-text"}">${fineValue}</strong>
         </button>
       </section>
-    <div class="section dashboard-grid">
-      <button class="panel dashboard-card primary-card fixture-tile" ${nextFixtureAction}>
-        <div class="match-title">
-          <h2>Nächster Spieltag</h2>
-        </div>
-        ${nextFixture ? playerNextFixtureCard(nextFixture, player.teamId) : emptyHtml("Kein nächster Spieltag", "")}
-      </button>
+    <div class="section dashboard-grid player-dashboard-lower-grid">
+      ${playerDashboardNextFixtureHtml(nextFixture, player.teamId, table)}
       <div class="panel dashboard-card">
         <h2>Newsfeed</h2>
         <div class="news-list">${news.length ? news.map(newsHtml).join("") : emptyHtml("Keine News", "")}</div>
@@ -1119,6 +1113,67 @@ function playerRank(playerId) {
   const ranking = window.HobbyligaStatistics.getPlayerRanking(state);
   const index = ranking.findIndex((row) => row.player.id === playerId);
   return index >= 0 ? index + 1 : null;
+}
+
+function dashboardFixtureIcon(name, tone = "neutral") {
+  const icons = {
+    calendar: `<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 10h16M8 14h3M8 17h5"/>`,
+    lane: `<path d="M6 20 10 4M18 20 14 4M8 20h8"/><path d="M10.8 7h2.4M10 11h4M9 15h6"/>`,
+    "ranking-star": `<path d="m12 3 2.2 4.5 5 .7-3.6 3.5.8 5-4.4-2.3-4.4 2.3.8-5-3.6-3.5 5-.7L12 3Z"/>`,
+    "chevron-right": `<path d="m9 5 7 7-7 7"/>`,
+  };
+  const icon = icons[name];
+  if (!icon) return "";
+  const toneClass = ["blue", "orange", "neutral"].includes(tone) ? tone : "neutral";
+  return `<span class="fixture-icon fixture-icon--${toneClass} fixture-icon--${name}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false">${icon}</svg></span>`;
+}
+
+function fixtureDashboardDate(value) {
+  if (!value) return "-";
+  const [year, month, day] = value.split("-").map(Number);
+  if (![year, month, day].every(Number.isFinite)) return formatDate(value);
+  return new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long" }).format(new Date(year, month - 1, day));
+}
+
+function fixtureDashboardLane(fixture, teamId) {
+  const lane = fixtureTeamLane(fixture, teamId);
+  return lane === "-" || lane === null || lane === undefined || lane === "" ? "noch offen" : lane;
+}
+
+function playerDashboardNextFixtureHtml(fixture, teamId, table) {
+  if (!fixture) {
+    return `<article class="player-next-fixture player-next-fixture--empty" aria-label="Nächster Spieltag. Aktuell ist kein weiterer Spieltag geplant.">
+      <span class="player-next-fixture-icon">${dashboardFixtureIcon("calendar", "blue")}</span>
+      <div class="player-next-fixture-content"><h2>Nächster Spieltag</h2><p>Aktuell ist kein weiterer Spieltag geplant.</p></div>
+    </article>`;
+  }
+
+  const ownTeam = teamById(teamId);
+  const opponentTeamId = fixture.homeTeamId === teamId ? fixture.awayTeamId : fixture.homeTeamId;
+  const opponent = teamById(opponentTeamId);
+  const opponentPlace = table.findIndex((row) => row.team.id === opponentTeamId) + 1;
+  const ownLane = fixtureDashboardLane(fixture, teamId);
+  const opponentLane = fixtureDashboardLane(fixture, opponentTeamId);
+  const dateLabel = fixtureDashboardDate(fixture.date);
+  const timeLabel = fixture.time || "noch offen";
+  const ownName = ownTeam?.name || "Eigenes Team";
+  const opponentName = opponent?.name || "Gegner";
+  const opponentPlaceLabel = opponentPlace > 0 ? opponentPlace : "-";
+  const ariaLabel = `Nächster Spieltag am ${dateLabel} um ${timeLabel}. ${ownName} gegen ${opponentName}. Eigene Bahn ${ownLane}, Gegner-Bahn ${opponentLane}, Gegner Tabellenplatz ${opponentPlaceLabel}. Spieltag öffnen.`;
+
+  return `<button class="player-next-fixture" type="button" data-action="open-fixture-day" data-id="${escapeHtml(fixture.id)}" aria-label="${escapeHtml(ariaLabel)}">
+    <span class="player-next-fixture-icon">${dashboardFixtureIcon("calendar", "blue")}</span>
+    <span class="player-next-fixture-content">
+      <span class="player-next-fixture-heading"><strong>Nächster Spieltag</strong><span class="player-next-fixture-date">${escapeHtml(dateLabel)}<small>${escapeHtml(timeLabel)} Uhr</small></span></span>
+      <span class="player-next-fixture-match"><strong>${escapeHtml(ownName)}</strong><em>vs.</em><strong>${escapeHtml(opponentName)}</strong></span>
+      <span class="player-next-fixture-meta">
+        <span>${dashboardFixtureIcon("lane", "blue")}Eigene Bahn: <b>${escapeHtml(String(ownLane))}</b></span>
+        <span>${dashboardFixtureIcon("lane", "orange")}Gegner-Bahn: <b>${escapeHtml(String(opponentLane))}</b></span>
+        <span>${dashboardFixtureIcon("ranking-star", "neutral")}Gegner Platz: <b>${opponentPlaceLabel}</b></span>
+      </span>
+    </span>
+    ${dashboardFixtureIcon("chevron-right", "neutral")}
+  </button>`;
 }
 
 function playerNextFixtureCard(fixture, teamId) {

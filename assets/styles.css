@@ -408,6 +408,200 @@ h3 {
   width: 100%;
 }
 
+.player-dashboard-screen .player-dashboard-lower-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+
+.player-next-fixture {
+  width: 100%;
+  min-height: 198px;
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) 24px;
+  align-items: center;
+  gap: 15px;
+  padding: 19px 17px;
+  position: relative;
+  overflow: hidden;
+  color: #f7fbff;
+  text-align: left;
+  background: linear-gradient(135deg, #101d31 0%, #091321 55%, #06101c 100%);
+  border: 1px solid rgba(88, 169, 255, 0.32);
+  border-radius: 17px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 24px rgba(0, 0, 0, 0.22), -4px 0 18px rgba(45, 157, 255, 0.12);
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+button.player-next-fixture {
+  cursor: pointer;
+}
+
+button.player-next-fixture:hover,
+button.player-next-fixture:focus-visible {
+  border-color: rgba(103, 190, 255, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 11px 26px rgba(0, 0, 0, 0.24), -4px 0 20px rgba(45, 157, 255, 0.24);
+  transform: translateY(-1px);
+}
+
+button.player-next-fixture:focus-visible {
+  outline: 2px solid #64c4ff;
+  outline-offset: 3px;
+}
+
+button.player-next-fixture:active {
+  transform: translateY(0);
+}
+
+.player-next-fixture-icon {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.player-next-fixture-icon::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: rgba(47, 157, 255, 0.12);
+  filter: blur(8px);
+}
+
+.player-next-fixture-icon .fixture-icon {
+  width: 58px;
+  height: 58px;
+  position: relative;
+  filter: drop-shadow(0 0 2px rgba(155, 219, 255, 0.74)) drop-shadow(0 0 10px rgba(45, 157, 255, 0.5));
+}
+
+.player-next-fixture-content {
+  min-width: 0;
+  display: grid;
+  gap: 11px;
+}
+
+.player-next-fixture-heading {
+  display: grid;
+  gap: 4px;
+}
+
+.player-next-fixture-heading > strong {
+  color: #fff;
+  font-size: clamp(1.22rem, 5.8vw, 1.45rem);
+  line-height: 1.08;
+}
+
+.player-next-fixture-date {
+  color: #c6d4e4;
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.player-next-fixture-date small {
+  margin-left: 6px;
+  color: #e6eef8;
+  font-size: inherit;
+  font-weight: 750;
+}
+
+.player-next-fixture-match {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 7px;
+  font-size: clamp(1rem, 4.8vw, 1.2rem);
+  line-height: 1.15;
+}
+
+.player-next-fixture-match strong:first-child {
+  color: #62c3ff;
+}
+
+.player-next-fixture-match strong:last-child {
+  color: #ffb34f;
+}
+
+.player-next-fixture-match em {
+  color: #d7e1ec;
+  font-size: 0.78em;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.player-next-fixture-meta {
+  display: grid;
+  gap: 5px;
+}
+
+.player-next-fixture-meta > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #b9c9d9;
+  font-size: 0.82rem;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.player-next-fixture-meta b {
+  color: #f2f7fd;
+  font-weight: 850;
+}
+
+.fixture-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.fixture-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.fixture-icon--blue {
+  color: #62c3ff;
+}
+
+.fixture-icon--orange {
+  color: #ffb34f;
+}
+
+.fixture-icon--neutral {
+  color: #d8e2ed;
+}
+
+.fixture-icon--chevron-right {
+  width: 24px;
+  height: 24px;
+  align-self: center;
+  color: #d8e2ed;
+}
+
+.player-next-fixture--empty {
+  grid-template-columns: 62px minmax(0, 1fr);
+}
+
+.player-next-fixture--empty .player-next-fixture-content {
+  gap: 6px;
+}
+
+.player-next-fixture--empty h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(1.22rem, 5.8vw, 1.45rem);
+}
+
+.player-next-fixture--empty p {
+  margin: 0;
+  color: #c6d4e4;
+}
+
 .team-members {
   margin: 0 0 18px;
   padding: 0 20px;
@@ -1633,6 +1827,29 @@ tr:last-child td {
     right: -62px;
     width: 188px;
     height: 188px;
+  }
+
+  .player-next-fixture {
+    grid-template-columns: 52px minmax(0, 1fr) 20px;
+    gap: 12px;
+    min-height: 190px;
+    padding: 17px 15px;
+  }
+
+  .player-next-fixture-icon {
+    width: 52px;
+    height: 52px;
+    align-self: start;
+  }
+
+  .player-next-fixture-icon .fixture-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .player-next-fixture-date small {
+    display: block;
+    margin: 2px 0 0;
   }
 
   .team-visual.hero {
