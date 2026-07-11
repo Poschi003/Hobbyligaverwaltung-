@@ -906,16 +906,14 @@ function renderPlayerDashboard() {
 
   const profileInitials = player.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
   const teamLabel = team?.name || "Ohne Team";
+  const currentUserId = activeUser()?.id;
   const teamMembers = player.teamId
     ? playersForTeam(player.teamId)
       .slice()
-      .sort((first, second) => {
-        if (first.id === player.id) return -1;
-        if (second.id === player.id) return 1;
-        return first.name.localeCompare(second.name, "de");
-      })
+      .filter((member) => state.users.find((user) => user.playerId === member.id)?.id !== currentUserId)
+      .sort((first, second) => first.name.localeCompare(second.name, "de"))
     : [];
-  const teamMembersHtml = player.teamId
+  const teamMembersHtml = player.teamId && teamMembers.length
     ? `<section class="team-members" aria-labelledby="teamMembersTitle">
         <h2 id="teamMembersTitle">Teammitglieder</h2>
         <div class="team-members-row">
@@ -927,15 +925,14 @@ function renderPlayerDashboard() {
             const avatar = imageUrl
               ? `<img src="${escapeHtml(String(imageUrl))}" alt="Profil von ${escapeHtml(fullName)}" />`
               : `<span aria-hidden="true">${escapeHtml(initials || "?")}</span>`;
-            return `<button class="team-member ${member.id === player.id ? "is-current" : ""}" type="button" data-action="open-player-profile" data-player-id="${escapeHtml(member.id)}" aria-label="Profil von ${escapeHtml(fullName)} öffnen" title="${escapeHtml(fullName)}">
+            return `<button class="team-member" type="button" data-action="open-player-profile" data-player-id="${escapeHtml(member.id)}" aria-label="Profil von ${escapeHtml(fullName)} öffnen" title="${escapeHtml(fullName)}">
               <span class="team-member-avatar ${imageUrl ? "has-image" : ""}">${avatar}</span>
               <span class="team-member-name">${escapeHtml(shortName)}</span>
-              ${member.id === player.id ? `<span class="team-member-you">Du</span>` : ""}
             </button>`;
           }).join("")}
         </div>
       </section>`
-    : `<section class="team-members team-members-empty" aria-labelledby="teamMembersTitle"><h2 id="teamMembersTitle">Teammitglieder</h2><p>Noch keinem Team zugeordnet.</p></section>`;
+    : `<section class="team-members team-members-empty" aria-labelledby="teamMembersTitle"><h2 id="teamMembersTitle">Teammitglieder</h2><p>${player.teamId ? "Noch keine weiteren Teammitglieder." : "Noch keinem Team zugeordnet."}</p></section>`;
   const teamLogo = team?.logo
     ? `<img class="player-team-logo" src="${team.logo}" alt="" />`
     : `<svg class="player-team-logo player-team-logo-placeholder" viewBox="0 0 240 240" aria-label="Bowling-Silhouette" role="img" focusable="false"><circle cx="74" cy="145" r="50" fill="currentColor" opacity=".72"/><circle cx="58" cy="128" r="6" fill="#050b15"/><circle cx="80" cy="117" r="6" fill="#050b15"/><circle cx="94" cy="139" r="6" fill="#050b15"/><path d="M145 45c15 0 24 12 24 29v48c0 18-9 30-24 30s-24-12-24-30V74c0-17 9-29 24-29Zm38 14c13 0 21 11 21 26v37c0 16-8 26-21 26s-21-10-21-26V85c0-15 8-26 21-26Zm-28 101h43l14 41h-71l14-41Z" fill="currentColor" opacity=".9"/></svg>`;
