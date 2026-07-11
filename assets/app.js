@@ -888,17 +888,17 @@ function teamLogoFor(team) {
   if (typeof team.logo === "string" && team.logo.trim()) return team.logo;
 
   const logoPaths = {
-    splities: "assets/team-logos/splittys.png",
-    splittys: "assets/team-logos/splittys.png",
-    sparebears: "assets/team-logos/spare-bears.png",
-    labowling: "assets/team-logos/la-bowling.png",
-    crazyballs: "assets/team-logos/crazy-balls.png",
-    strikehungrywolves: "assets/team-logos/strike-hungry-wolves.png",
-    flyingpins: "assets/team-logos/flying-pins.png",
-    zefixfoium: "assets/team-logos/zefix-foi-um.png",
-    pinupgirls: "assets/team-logos/pinup-girls.png",
-    daarmandopizza: "assets/team-logos/da-armando-pizza.png",
-    pinbreakers: "assets/team-logos/pinbreakers.png",
+    splities: "assets/team-logos/splittys.png?v=2",
+    splittys: "assets/team-logos/splittys.png?v=2",
+    sparebears: "assets/team-logos/spare-bears.png?v=2",
+    labowling: "assets/team-logos/la-bowling.png?v=2",
+    crazyballs: "assets/team-logos/crazy-balls.png?v=2",
+    strikehungrywolves: "assets/team-logos/strike-hungry-wolves.png?v=2",
+    flyingpins: "assets/team-logos/flying-pins.png?v=2",
+    zefixfoium: "assets/team-logos/zefix-foi-um.png?v=2",
+    pinupgirls: "assets/team-logos/pinup-girls.png?v=2",
+    daarmandopizza: "assets/team-logos/da-armando-pizza.png?v=2",
+    pinbreakers: "assets/team-logos/pinbreakers.png?v=2",
   };
   const normalizeLogoName = (value) => String(value || "")
     .normalize("NFD")
