@@ -900,6 +900,11 @@ function renderPlayerDashboard() {
   const tablePlace = table.findIndex((row) => row.team.id === player.teamId) + 1;
   const stats = playerStats(player.id);
   const rank = playerRank(player.id);
+  const rankingValue = rank ? `Platz ${rank}` : "-";
+  const teamPlaceValue = tablePlace ? `Platz ${tablePlace}` : "-";
+  const handicapValue = stats.valid ? String(stats.handicap) : "-";
+  const averageValue = stats.valid ? stats.average.toFixed(1).replace(".", ",") : "n. v.";
+  const fineValue = openFines.length ? `${openFineTotal.toFixed(2).replace(".", ",")} € offen` : "Keine offen";
   const dashboardPanel = sessionStorage.getItem("playerDashboardPanel") || "";
   const news = visibleNews().filter((item) => !["Handicap-Regel aktiv", "Saison 2025/26 importiert"].includes(item.title)).slice(0, 4);
   const nextFixtureAction = nextFixture ? `data-action="open-fixture-day" data-id="${nextFixture.id}"` : "";
@@ -949,32 +954,39 @@ function renderPlayerDashboard() {
         <div class="player-team-logo-wrap">${teamLogo}</div>
       </section>
       ${teamMembersHtml}
+      <section class="player-stat-grid" aria-label="Persönliche Statistik">
+        <button class="player-stat-tile player-stat-tile--orange" type="button" data-action="dashboard-panel" data-panel="ranking" aria-label="Ranglistenplatz: ${rankingValue}. Rangliste öffnen.">
+          <span class="player-stat-label">Ranglistenplatz</span>
+          ${dashboardStatIcon("trophy", "orange")}
+          <strong class="player-stat-value">${rankingValue}</strong>
+        </button>
+        <button class="player-stat-tile player-stat-tile--blue" type="button" data-action="dashboard-panel" data-panel="table" aria-label="Teamplatz: ${teamPlaceValue}. Tabelle öffnen.">
+          <span class="player-stat-label">Teamplatz</span>
+          ${dashboardStatIcon("team", "blue")}
+          <strong class="player-stat-value">${teamPlaceValue}</strong>
+        </button>
+        <div class="player-stat-tile player-stat-tile--orange" aria-label="Handicap: ${handicapValue}">
+          <span class="player-stat-label">Handicap</span>
+          ${dashboardStatIcon("bowling-pin", "orange")}
+          <strong class="player-stat-value">${handicapValue}</strong>
+        </div>
+        <button class="player-stat-tile player-stat-tile--blue player-stat-tile--wide" type="button" data-action="dashboard-panel" data-panel="bestAverage" aria-label="Schnitt: ${averageValue}. Schnittwertung öffnen.">
+          <span class="player-stat-label">Schnitt</span>
+          ${dashboardStatIcon("trend-up", "blue")}
+          <strong class="player-stat-value">${averageValue}</strong>
+        </button>
+        <button class="player-stat-tile player-stat-tile--orange player-stat-tile--wide" type="button" data-action="dashboard-panel" data-panel="fines" aria-label="Offene Strafen: ${fineValue}. Strafgeld-Details öffnen.">
+          <span class="player-stat-label">Strafe</span>
+          ${dashboardStatIcon("alert-circle", "orange")}
+          <strong class="player-stat-value ${openFines.length ? "" : "is-text"}">${fineValue}</strong>
+        </button>
+      </section>
     <div class="section dashboard-grid">
       <button class="panel dashboard-card primary-card fixture-tile" ${nextFixtureAction}>
         <div class="match-title">
           <h2>Nächster Spieltag</h2>
         </div>
         ${nextFixture ? playerNextFixtureCard(nextFixture, player.teamId) : emptyHtml("Kein nächster Spieltag", "")}
-      </button>
-      <button class="panel dashboard-card dashboard-action-card" data-action="dashboard-panel" data-panel="table">
-        <span class="field-label">Tabelle</span>
-        <strong>Platz ${tablePlace || "-"}</strong>
-        <span>${team?.name || "-"} · ${teamRow?.points || 0} Punkte</span>
-      </button>
-      <button class="panel dashboard-card dashboard-action-card" data-action="dashboard-panel" data-panel="ranking">
-        <span class="field-label">Rangliste</span>
-        <strong>${rank ? `#${rank}` : "-"}</strong>
-        <span>Schnittwertung</span>
-      </button>
-      <button class="panel dashboard-card dashboard-action-card" data-action="dashboard-panel" data-panel="bestAverage">
-        <span class="field-label">Bester Schnitt</span>
-        <strong>${stats.valid ? stats.average.toFixed(1) : "n.v."}</strong>
-        <span>${stats.games} Spiele</span>
-      </button>
-      <button class="panel dashboard-card dashboard-action-card" data-action="dashboard-panel" data-panel="fines">
-        <span class="field-label">Offene Strafgelder</span>
-        <strong>${openFineTotal.toFixed(2)} €</strong>
-        <span>${openFines.length ? `${openFines.length} offen` : "Keine offenen"}</span>
       </button>
       <div class="panel dashboard-card">
         <h2>Newsfeed</h2>
@@ -1087,6 +1099,20 @@ function renderPlayerFixtureDay() {
 
 function statInner(label, value) {
   return `<span>${label}</span><strong>${value}</strong>`;
+}
+
+function dashboardStatIcon(name, tone) {
+  const icons = {
+    trophy: `<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9 20h6"/>`,
+    team: `<circle cx="8.5" cy="8" r="3"/><circle cx="16.8" cy="9.2" r="2.4"/><path d="M3.6 19c.6-3.1 2.6-5 4.9-5s4.4 1.9 5 5M14.2 18.7c.4-2.3 1.8-3.9 3.9-3.9 1.1 0 2.1.4 2.8 1.1"/>`,
+    "bowling-pin": `<path d="M10 3h4l1 4-1.8 2.8 2.5 10.2H8.3l2.5-10.2L9 7l1-4Z"/><path d="M9.5 7h5"/>`,
+    "trend-up": `<path d="M4 19V5M4 19h16"/><path d="m7 15 4-4 3 2 5-6M15 7h4v4"/>`,
+    "alert-circle": `<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5M12 16h.01"/>`,
+  };
+  const icon = icons[name];
+  if (!icon) return "";
+  const toneClass = tone === "blue" ? " stat-icon--blue" : " stat-icon--orange";
+  return `<span class="stat-icon${toneClass}" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false">${icon}</svg></span>`;
 }
 
 function playerRank(playerId) {

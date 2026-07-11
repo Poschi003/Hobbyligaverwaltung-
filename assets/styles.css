@@ -516,6 +516,94 @@ h3 {
   font-size: 0.85rem;
 }
 
+.player-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 9px;
+  margin: -10px 0 0;
+  padding: 0 16px;
+}
+
+.player-stat-tile {
+  --stat-accent: #ffad5a;
+  grid-column: span 2;
+  min-width: 0;
+  min-height: 122px;
+  display: grid;
+  grid-template-rows: minmax(25px, auto) 1fr auto;
+  place-items: center;
+  gap: 7px;
+  padding: 12px 8px 11px;
+  color: #f7fbff;
+  text-align: center;
+  background: linear-gradient(145deg, #101a2a, #0a111e 78%);
+  border: 1px solid rgba(168, 196, 230, 0.17);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+button.player-stat-tile {
+  cursor: pointer;
+}
+
+.player-stat-tile--blue {
+  --stat-accent: #59b8ff;
+}
+
+.player-stat-tile--wide {
+  grid-column: span 3;
+  min-height: 116px;
+}
+
+.player-stat-tile:focus-visible {
+  outline: 2px solid var(--stat-accent);
+  outline-offset: 3px;
+}
+
+.player-stat-label {
+  max-width: 100%;
+  color: #bfcbda;
+  font-size: 0.68rem;
+  font-weight: 750;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.player-stat-value {
+  max-width: 100%;
+  color: #fff;
+  font-size: clamp(0.98rem, 4.2vw, 1.18rem);
+  font-weight: 850;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.player-stat-value.is-text {
+  font-size: clamp(0.76rem, 3.2vw, 0.92rem);
+}
+
+.stat-icon {
+  width: 27px;
+  height: 27px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.stat-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.stat-icon--blue {
+  color: #59b8ff;
+  filter: drop-shadow(0 0 5px rgba(69, 169, 255, 0.32));
+}
+
+.stat-icon--orange {
+  color: #ffad5a;
+  filter: drop-shadow(0 0 5px rgba(255, 159, 67, 0.28));
+}
+
 .player-profile-placeholder {
   width: 88px;
   height: 88px;
