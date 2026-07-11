@@ -1099,7 +1099,7 @@ function dashboardStatIcon(name, tone) {
   const icons = {
     trophy: `<path d="M8 4h8v5a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1a3 3 0 0 0 3 3M16 6h3v1a3 3 0 0 1-3 3M12 13v4M9 20h6"/>`,
     team: `<circle cx="8.5" cy="8" r="3"/><circle cx="16.8" cy="9.2" r="2.4"/><path d="M3.6 19c.6-3.1 2.6-5 4.9-5s4.4 1.9 5 5M14.2 18.7c.4-2.3 1.8-3.9 3.9-3.9 1.1 0 2.1.4 2.8 1.1"/>`,
-    "bowling-pin": `<path d="M10 3h4l1 4-1.8 2.8 2.5 10.2H8.3l2.5-10.2L9 7l1-4Z"/><path d="M9.5 7h5"/>`,
+    "bowling-pin": `<path d="M12 3.5c-1.1 1.2-1.5 2.4-1.2 3.6.2.8.8 1.5.6 2.5-.2 1.2-.9 2.3-1.1 3.5L9.2 19h5.6l-1.1-5.4c-.2-1.2-.9-2.3-1.1-3.5-.2-1 .4-1.7.6-2.5.3-1.2-.1-2.4-1.2-3.6Z"/><path d="M10.8 8h2.4M4 6.5h3M5.5 5v3M17 18h3"/>`,
     "trend-up": `<path d="M4 19V5M4 19h16"/><path d="m7 15 4-4 3 2 5-6M15 7h4v4"/>`,
     "alert-circle": `<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5M12 16h.01"/>`,
   };
