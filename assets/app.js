@@ -1101,6 +1101,23 @@ function renderPlayerFixtureDay() {
   const home = teamById(fixture.homeTeamId);
   const away = teamById(fixture.awayTeamId);
   const opponent = fixture.homeTeamId === player.teamId ? away : home;
+  const ownLane = fixtureTeamLane(fixture, player.teamId);
+  const opponentLane = fixtureTeamLane(fixture, opponent?.id);
+  const matchdayDate = fixtureDashboardDate(fixture.date);
+  const matchdayTime = fixture.time || "-";
+  const matchdayTeamVisual = (team, lane, tone, fallbackName) => {
+    const name = team?.name || fallbackName;
+    const logoUrl = teamLogoFor(team);
+    const fallback = `<span class="fixture-matchday-team-fallback"${logoUrl ? " hidden" : ""}>${escapeHtml(name)}</span>`;
+    const logo = logoUrl
+      ? `<img class="fixture-matchday-team-logo" src="${escapeHtml(logoUrl)}" alt="Teamlogo ${escapeHtml(name)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />`
+      : "";
+    return `<div class="fixture-matchday-team fixture-matchday-team--${tone}">
+      <div class="fixture-matchday-logo-wrap">${logo}${fallback}</div>
+      <strong aria-label="Bahn ${escapeHtml(String(lane))}">${escapeHtml(String(lane))}</strong>
+    </div>`;
+  };
+  const matchdayAriaLabel = `Spieltag ${fixture.day} am ${matchdayDate} um ${matchdayTime} Uhr. ${ownTeam?.name || "Eigenes Team"} auf Bahn ${ownLane} gegen ${opponent?.name || "Gegner"} auf Bahn ${opponentLane}.`;
   const pendingForOwnTeam = pendingActivationRequestForTeam(fixture, player.teamId);
   const latestOwn = latestActivationRequest(fixture, player.teamId);
   const enterAllowed = canEnterFixture(fixture);
@@ -1114,16 +1131,15 @@ function renderPlayerFixtureDay() {
           <button class="ghost-button" type="button" data-action="back-player-dashboard">Zurück</button>
           <span class="pill ${statusClass}">${fixtureActivationLabel(fixture)}</span>
         </div>
-        <div class="fixture-scorecard">
-          <span class="field-label">Spieltag ${fixture.day}</span>
-          <div class="fixture-team-row">
-            <div><strong>${home?.name || "-"}</strong><small>Bahn ${fixtureTeamLane(fixture, fixture.homeTeamId)}</small></div>
-            <b>vs.</b>
-            <div><strong>${away?.name || "-"}</strong><small>Bahn ${fixtureTeamLane(fixture, fixture.awayTeamId)}</small></div>
+        <div class="fixture-scorecard fixture-matchday-card" aria-label="${escapeHtml(matchdayAriaLabel)}">
+          <div class="fixture-matchday-meta">
+            <span>Spieltag ${fixture.day}</span>
+            <strong>${escapeHtml(matchdayDate)} <i aria-hidden="true">&middot;</i> ${escapeHtml(matchdayTime)} Uhr</strong>
           </div>
-          <div class="fixture-page-meta">
-            <span>Gegner: ${opponent?.name || "-"}</span>
-            <span>${formatDate(fixture.date)} · ${fixture.time || "-"}</span>
+          <div class="fixture-matchday-duel">
+            ${matchdayTeamVisual(ownTeam, ownLane, "own", "Eigenes Team")}
+            <b aria-hidden="true">VS</b>
+            ${matchdayTeamVisual(opponent, opponentLane, "opponent", "Gegner")}
           </div>
         </div>
       </section>

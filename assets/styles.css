@@ -1810,27 +1810,15 @@ button.player-stat-tile:active {
 .fixture-page-hero {
   display: grid;
   gap: 18px;
-  min-height: 230px;
+  min-height: 286px;
   padding: 18px;
   color: #fff;
-  background:
-    linear-gradient(135deg, rgba(8, 8, 9, 0.98), rgba(35, 35, 39, 0.96)),
-    var(--ink);
-  border: 1px solid rgba(8, 8, 9, 0.08);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  background: linear-gradient(145deg, #121b29 0%, #0a1019 65%, #070b11 100%);
+  border: 1px solid rgba(145, 170, 200, 0.18);
+  border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(223, 237, 255, 0.04), 0 18px 34px rgba(0, 0, 0, 0.22);
   overflow: hidden;
   position: relative;
-}
-
-.fixture-page-hero::after {
-  content: "";
-  position: absolute;
-  left: 18px;
-  right: 18px;
-  bottom: 0;
-  height: 5px;
-  background: var(--accent);
 }
 
 .fixture-page-top,
@@ -1858,9 +1846,96 @@ button.player-stat-tile:active {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 12px;
+  gap: 16px;
   align-content: end;
-  min-height: 120px;
+  min-height: 158px;
+}
+
+.fixture-matchday-meta {
+  display: grid;
+  gap: 4px;
+}
+
+.fixture-matchday-meta span {
+  color: rgba(221, 230, 243, 0.72);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.fixture-matchday-meta strong {
+  color: #f4f7fb;
+  font-size: 0.98rem;
+  font-weight: 750;
+}
+
+.fixture-matchday-meta i {
+  color: rgba(213, 226, 241, 0.58);
+  font-style: normal;
+  padding: 0 0.2em;
+}
+
+.fixture-matchday-duel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.fixture-matchday-team {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding-bottom: 4px;
+}
+
+.fixture-matchday-logo-wrap {
+  display: grid;
+  place-items: center;
+  width: min(100%, 115px);
+  height: clamp(65px, 20vw, 90px);
+}
+
+.fixture-matchday-team-logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.28));
+}
+
+.fixture-matchday-team-fallback {
+  max-width: 100%;
+  color: #f5f8fc;
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.fixture-matchday-team strong {
+  position: relative;
+  z-index: 1;
+  font-size: 1.55rem;
+  font-weight: 850;
+  line-height: 1;
+  text-shadow: 0 0 12px currentColor;
+}
+
+.fixture-matchday-team--own strong {
+  color: #62b9ff;
+}
+
+.fixture-matchday-team--opponent strong {
+  color: #f2b052;
+}
+
+.fixture-matchday-duel > b {
+  color: #e6ebf3;
+  font-size: clamp(1.38rem, 6vw, 1.68rem);
+  font-weight: 850;
+  letter-spacing: 0.04em;
 }
 
 .fixture-team-row {
@@ -2472,7 +2547,7 @@ tr:last-child td {
   }
 
   .fixture-page-hero {
-    min-height: 210px;
+    min-height: 286px;
     padding: 16px;
   }
 
