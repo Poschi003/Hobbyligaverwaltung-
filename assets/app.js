@@ -1237,6 +1237,28 @@ function playerDashboardNextFixtureHtml(fixture, teamId) {
   const timeLabel = fixture.time || "noch offen";
   const ownName = ownTeam?.name || "Eigenes Team";
   const opponentName = opponent?.name || "Gegner";
+  const teamVisual = (team, name, lane, tone, laneLabel) => {
+    const logoUrl = teamLogoFor(team);
+    const fallback = `<span class="player-next-fixture-team-fallback"${logoUrl ? " hidden" : ""}>${escapeHtml(name)}</span>`;
+    const logo = logoUrl
+      ? `<img class="player-next-fixture-team-logo" src="${escapeHtml(logoUrl)}" alt="Teamlogo ${escapeHtml(name)}" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />`
+      : "";
+    return `<span class="player-next-fixture-team player-next-fixture-team--${tone}">
+      ${logo}${fallback}
+      <small aria-label="${escapeHtml(laneLabel)} ${escapeHtml(String(lane))}">${escapeHtml(String(lane))}</small>
+    </span>`;
+  };
+  const matchAriaLabel = `N\u00e4chster Spieltag am ${dateLabel} um ${timeLabel}. ${ownName} gegen ${opponentName}. Eigene Bahn ${ownLane}, Gegner-Bahn ${opponentLane}. Spieltag \u00f6ffnen.`;
+
+  return `<button class="player-next-fixture" type="button" data-action="open-fixture-day" data-id="${escapeHtml(fixture.id)}" aria-label="${escapeHtml(matchAriaLabel)}">
+    <span class="player-next-fixture-heading"><strong>N\u00e4chster Spieltag</strong><span class="player-next-fixture-date">${escapeHtml(dateLabel)} <small>&middot; ${escapeHtml(timeLabel)} Uhr</small></span></span>
+    <span class="player-next-fixture-match">
+      ${teamVisual(ownTeam, ownName, ownLane, "own", "Eigene Bahn")}
+      <em>VS</em>
+      ${teamVisual(opponent, opponentName, opponentLane, "opponent", "Gegner-Bahn")}
+    </span>
+    ${dashboardFixtureIcon("chevron-right", "neutral")}
+  </button>`;
   const ariaLabel = `Nächster Spieltag am ${dateLabel} um ${timeLabel}. ${ownName} gegen ${opponentName}. Eigene Bahn ${ownLane}, Gegner-Bahn ${opponentLane}. Spieltag öffnen.`;
 
   return `<button class="player-next-fixture" type="button" data-action="open-fixture-day" data-id="${escapeHtml(fixture.id)}" aria-label="${escapeHtml(ariaLabel)}">

@@ -784,21 +784,31 @@ h3 {
 
 .player-next-fixture {
   width: 100%;
-  min-height: 198px;
+  min-height: 204px;
   display: grid;
-  grid-template-columns: 62px minmax(0, 1fr) 24px;
-  align-items: center;
-  gap: 15px;
-  padding: 19px 17px;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  padding: 18px;
   position: relative;
   overflow: hidden;
   color: #f7fbff;
-  text-align: left;
+  text-align: center;
+  isolation: isolate;
   background: linear-gradient(135deg, #101d31 0%, #091321 55%, #06101c 100%);
   border: 1px solid rgba(88, 169, 255, 0.32);
   border-radius: 17px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 24px rgba(0, 0, 0, 0.22), -4px 0 18px rgba(45, 157, 255, 0.12);
   transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.player-next-fixture::before {
+  content: "";
+  position: absolute;
+  inset: 38% 22% 8%;
+  z-index: -1;
+  background: radial-gradient(circle, rgba(117, 188, 255, 0.12), transparent 68%);
+  filter: blur(14px);
 }
 
 button.player-next-fixture {
@@ -854,6 +864,7 @@ button.player-next-fixture:active {
 .player-next-fixture-heading {
   display: grid;
   gap: 4px;
+  justify-items: center;
 }
 
 .player-next-fixture-heading > strong {
@@ -877,39 +888,76 @@ button.player-next-fixture:active {
 }
 
 .player-next-fixture-match {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 5px 7px;
-  font-size: clamp(1rem, 4.8vw, 1.2rem);
-  line-height: 1.15;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .player-next-fixture-team {
   display: grid;
-  gap: 3px;
+  grid-template-rows: minmax(65px, 90px) auto;
+  align-items: center;
+  justify-items: center;
+  min-width: 0;
+  gap: 5px;
 }
 
-.player-next-fixture-team--own strong {
-  color: #62c3ff;
+.player-next-fixture-team-logo {
+  display: block;
+  width: clamp(95px, 25vw, 115px);
+  max-width: 100%;
+  height: clamp(65px, 18vw, 90px);
+  object-fit: contain;
+  object-position: center;
 }
 
-.player-next-fixture-team--opponent strong {
-  color: #ffb34f;
+.player-next-fixture-team--own .player-next-fixture-team-logo {
+  filter: drop-shadow(0 0 7px rgba(79, 181, 255, 0.3));
+}
+
+.player-next-fixture-team--opponent .player-next-fixture-team-logo {
+  filter: drop-shadow(0 0 7px rgba(255, 169, 74, 0.28));
+}
+
+.player-next-fixture-team-fallback {
+  display: grid;
+  width: 100%;
+  min-height: 65px;
+  place-items: center;
+  color: #f2f7fd;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.player-next-fixture-team-fallback[hidden] {
+  display: none;
 }
 
 .player-next-fixture-team small {
-  color: #f2f7fd;
-  font-size: 0.76em;
-  font-weight: 850;
-  line-height: 1;
+  font-size: clamp(1.25rem, 5.5vw, 1.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.player-next-fixture-team--own small {
+  color: #62c3ff;
+}
+
+.player-next-fixture-team--opponent small {
+  color: #ffb34f;
 }
 
 .player-next-fixture-match em {
   color: #d7e1ec;
-  font-size: 0.78em;
+  font-size: clamp(1.25rem, 5.4vw, 1.55rem);
   font-style: normal;
-  font-weight: 800;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-shadow: 0 0 10px rgba(227, 239, 252, 0.22);
 }
 
 .player-next-fixture-meta {
@@ -962,6 +1010,12 @@ button.player-next-fixture:active {
   height: 24px;
   align-self: center;
   color: #d8e2ed;
+}
+
+.player-next-fixture > .fixture-icon--chevron-right {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
 
 .player-next-fixture--empty {
@@ -2222,8 +2276,6 @@ tr:last-child td {
   }
 
   .player-next-fixture {
-    grid-template-columns: 52px minmax(0, 1fr) 20px;
-    gap: 12px;
     min-height: 190px;
     padding: 17px 15px;
   }
@@ -2240,8 +2292,8 @@ tr:last-child td {
   }
 
   .player-next-fixture-date small {
-    display: block;
-    margin: 2px 0 0;
+    display: inline;
+    margin-left: 6px;
   }
 
   .team-visual.hero {
