@@ -1058,7 +1058,7 @@ function renderPlayerDashboard() {
         </button>
       </section>
     <div class="section dashboard-grid player-dashboard-lower-grid">
-      ${playerDashboardNextFixtureHtml(nextFixture, player.teamId, table)}
+      ${playerDashboardNextFixtureHtml(nextFixture, player.teamId)}
       <div class="panel dashboard-card">
         <h2>Newsfeed</h2>
         <div class="news-list">${news.length ? news.map(newsHtml).join("") : emptyHtml("Keine News", "")}</div>
@@ -1217,7 +1217,7 @@ function fixtureDashboardLane(fixture, teamId) {
   return lane === "-" || lane === null || lane === undefined || lane === "" ? "noch offen" : lane;
 }
 
-function playerDashboardNextFixtureHtml(fixture, teamId, table) {
+function playerDashboardNextFixtureHtml(fixture, teamId) {
   if (!fixture) {
     return `<article class="player-next-fixture player-next-fixture--empty" aria-label="Nächster Spieltag. Aktuell ist kein weiterer Spieltag geplant.">
       <span class="player-next-fixture-icon">${dashboardFixtureIcon("calendar", "blue")}</span>
@@ -1228,25 +1228,22 @@ function playerDashboardNextFixtureHtml(fixture, teamId, table) {
   const ownTeam = teamById(teamId);
   const opponentTeamId = fixture.homeTeamId === teamId ? fixture.awayTeamId : fixture.homeTeamId;
   const opponent = teamById(opponentTeamId);
-  const opponentPlace = table.findIndex((row) => row.team.id === opponentTeamId) + 1;
   const ownLane = fixtureDashboardLane(fixture, teamId);
   const opponentLane = fixtureDashboardLane(fixture, opponentTeamId);
   const dateLabel = fixtureDashboardDate(fixture.date);
   const timeLabel = fixture.time || "noch offen";
   const ownName = ownTeam?.name || "Eigenes Team";
   const opponentName = opponent?.name || "Gegner";
-  const opponentPlaceLabel = opponentPlace > 0 ? opponentPlace : "-";
-  const ariaLabel = `Nächster Spieltag am ${dateLabel} um ${timeLabel}. ${ownName} gegen ${opponentName}. Eigene Bahn ${ownLane}, Gegner-Bahn ${opponentLane}, Gegner Tabellenplatz ${opponentPlaceLabel}. Spieltag öffnen.`;
+  const ariaLabel = `Nächster Spieltag am ${dateLabel} um ${timeLabel}. ${ownName} gegen ${opponentName}. Eigene Bahn ${ownLane}, Gegner-Bahn ${opponentLane}. Spieltag öffnen.`;
 
   return `<button class="player-next-fixture" type="button" data-action="open-fixture-day" data-id="${escapeHtml(fixture.id)}" aria-label="${escapeHtml(ariaLabel)}">
     <span class="player-next-fixture-icon">${dashboardFixtureIcon("calendar", "blue")}</span>
     <span class="player-next-fixture-content">
       <span class="player-next-fixture-heading"><strong>Nächster Spieltag</strong><span class="player-next-fixture-date">${escapeHtml(dateLabel)}<small>${escapeHtml(timeLabel)} Uhr</small></span></span>
-      <span class="player-next-fixture-match"><strong>${escapeHtml(ownName)}</strong><em>vs.</em><strong>${escapeHtml(opponentName)}</strong></span>
-      <span class="player-next-fixture-meta">
-        <span>${dashboardFixtureIcon("lane", "blue")}Eigene Bahn: <b>${escapeHtml(String(ownLane))}</b></span>
-        <span>${dashboardFixtureIcon("lane", "orange")}Gegner-Bahn: <b>${escapeHtml(String(opponentLane))}</b></span>
-        <span>${dashboardFixtureIcon("ranking-star", "neutral")}Gegner Platz: <b>${opponentPlaceLabel}</b></span>
+      <span class="player-next-fixture-match">
+        <span class="player-next-fixture-team player-next-fixture-team--own"><strong>${escapeHtml(ownName)}</strong><small aria-label="Eigene Bahn ${escapeHtml(String(ownLane))}">${escapeHtml(String(ownLane))}</small></span>
+        <em>vs.</em>
+        <span class="player-next-fixture-team player-next-fixture-team--opponent"><strong>${escapeHtml(opponentName)}</strong><small aria-label="Gegner-Bahn ${escapeHtml(String(opponentLane))}">${escapeHtml(String(opponentLane))}</small></span>
       </span>
     </span>
     ${dashboardFixtureIcon("chevron-right", "neutral")}
