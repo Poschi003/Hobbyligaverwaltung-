@@ -1022,6 +1022,9 @@ function renderPlayerDashboard() {
 
   wrap.innerHTML = `
     <div class="player-dashboard-screen">
+      <div class="player-league-masthead">
+        <img class="player-league-logo" src="assets/branding/la-bowling-hobbyliga-2026-27.png" alt="LA-Bowling Hobbyliga &ndash; Saison 2026/27" onerror="this.parentElement.hidden=true" />
+      </div>
       <section class="player-dashboard-head" aria-label="Spielerprofil von ${escapeHtml(player.name)}, Team ${escapeHtml(teamLabel)}">
         <div class="player-profile-placeholder" aria-label="Profilbild-Platzhalter">${profileInitials || "?"}</div>
         <div class="player-profile-copy">
