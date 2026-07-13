@@ -125,14 +125,14 @@ body.is-player-app .player-league-logo {
 
 body.is-player-app .player-dashboard-head {
   margin-bottom: var(--space-5);
-  min-height: 200px;
+  min-height: 188px;
   padding: 18px;
   display: block;
 }
 
 body.is-player-app .player-profile-copy {
   position: absolute;
-  top: 20px;
+  top: 18px;
   left: 18px;
   max-width: calc(100% - 132px);
 }
@@ -140,7 +140,7 @@ body.is-player-app .player-profile-copy {
 body.is-player-app .player-profile-placeholder {
   position: absolute;
   left: 18px;
-  bottom: 18px;
+  bottom: 38px;
 }
 
 body.is-player-app .player-profile-placeholder {
@@ -149,10 +149,34 @@ body.is-player-app .player-profile-placeholder {
   font-size: 1rem;
 }
 
-body.is-player-app .player-profile-copy h2 {
-  font-size: clamp(1.15rem, 5.6vw, 1.35rem);
-  font-weight: 850;
-  line-height: 1;
+body.is-player-app .player-league-label {
+  margin: 0;
+  color: #f4f6f8;
+  font-size: clamp(0.82rem, 3.8vw, 0.98rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.15;
+}
+
+body.is-player-app .player-league-label span {
+  color: #bc5e63;
+}
+
+body.is-player-app .player-profile-name {
+  position: absolute;
+  z-index: 2;
+  bottom: 18px;
+  left: 12px;
+  width: 76px;
+  margin: 0;
+  overflow: hidden;
+  color: #dbe3eb;
+  font-size: 0.67rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 body.is-player-app .player-name-line {
@@ -164,35 +188,31 @@ body.is-player-app .player-motivation {
 }
 
 body.is-player-app .player-team-logo-wrap {
-  right: 2px;
-  top: 0;
-  width: clamp(176px, 50vw, 206px);
-  height: clamp(176px, 50vw, 206px);
-  opacity: 0.34;
+  right: -4px;
+  top: 2px;
+  width: clamp(184px, 54vw, 224px);
+  height: clamp(184px, 54vw, 224px);
+  opacity: 0.43;
+}
+
+body.is-player-app .player-team-logo,
+body.is-player-app .player-next-fixture-team-logo {
+  filter: grayscale(0.88) saturate(0.28) brightness(1.18) contrast(0.92);
 }
 
 body.is-player-app .team-members {
   position: relative;
   z-index: 3;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: start;
-  column-gap: 10px;
-  margin: -36px 0 16px;
+  display: block;
+  margin: -30px 0 16px;
   padding: 0 var(--space-1);
 }
 
 body.is-player-app .team-members h2 {
-  grid-column: 1;
-  grid-row: 1;
-  margin: 12px 0 0;
-  font-size: 0.94rem;
-  line-height: 1.1;
+  display: none;
 }
 
 body.is-player-app .team-members-row {
-  grid-column: 2;
-  grid-row: 1;
   width: fit-content;
   max-width: 100%;
   margin-left: auto;
@@ -219,7 +239,8 @@ body.is-player-app .team-member-avatar {
   width: 42px;
   height: 42px;
   border-width: 2px;
-  box-shadow: 0 0 0 2px rgba(37, 137, 235, 0.07), 0 0 9px rgba(40, 146, 255, 0.17);
+  border-color: #6d9ab8;
+  box-shadow: 0 0 0 2px rgba(125, 166, 193, 0.06), 0 0 7px rgba(88, 138, 172, 0.12);
   font-size: 0.68rem;
 }
 
@@ -239,6 +260,67 @@ body.is-player-app .team-members-empty h2 {
 
 body.is-player-app .player-stat-grid {
   margin-top: 0;
+}
+
+body.is-player-app .player-stat-tile,
+body.is-player-app .player-stat-tile--blue,
+body.is-player-app .player-stat-tile--orange {
+  --stat-accent: #a9c5dc;
+  border-color: rgba(137, 165, 188, 0.18);
+  box-shadow: inset 0 1px 0 rgba(242, 247, 252, 0.045), inset 0 0 14px rgba(137, 177, 209, 0.018), 0 7px 16px rgba(0, 0, 0, 0.18);
+}
+
+body.is-player-app .player-stat-label {
+  color: #b8c1cc;
+  font-weight: 650;
+}
+
+body.is-player-app .player-stat-value {
+  color: #f4f6f8;
+  font-weight: 800;
+  text-shadow: none;
+}
+
+body.is-player-app .player-stat-value.is-text {
+  color: #e2e8ee;
+}
+
+body.is-player-app .stat-icon--blue,
+body.is-player-app .stat-icon--orange {
+  color: #a9c5dc;
+  filter: drop-shadow(0 0 4px rgba(169, 197, 220, 0.16));
+}
+
+body.is-player-app .stat-icon::before {
+  opacity: 0.055;
+  filter: blur(7px);
+}
+
+body.is-player-app .player-stat-tile--fine.has-open-fines {
+  --stat-accent: #d6a05d;
+  border-color: rgba(214, 160, 93, 0.48);
+  box-shadow: inset 0 1px 0 rgba(255, 237, 211, 0.06), 0 7px 16px rgba(0, 0, 0, 0.18), 0 0 8px rgba(214, 160, 93, 0.08);
+}
+
+body.is-player-app .player-stat-tile--fine.has-open-fines .stat-icon,
+body.is-player-app .player-stat-tile--fine.has-open-fines .player-stat-value {
+  color: #d6a05d;
+  filter: drop-shadow(0 0 4px rgba(214, 160, 93, 0.16));
+}
+
+body.is-player-app .player-profile-placeholder {
+  border-color: #75a5c6;
+  box-shadow: 0 0 0 3px rgba(118, 165, 198, 0.07), 0 0 10px rgba(94, 150, 188, 0.15);
+}
+
+body.is-player-app .player-next-fixture {
+  border-color: rgba(137, 165, 188, 0.22);
+  box-shadow: inset 0 1px 0 rgba(242, 247, 252, 0.045), 0 8px 18px rgba(0, 0, 0, 0.18);
+}
+
+body.is-player-app .player-next-fixture-team--own .player-next-fixture-team-logo,
+body.is-player-app .player-next-fixture-team--opponent .player-next-fixture-team-logo {
+  filter: grayscale(0.88) saturate(0.28) brightness(1.18) contrast(0.92) drop-shadow(0 0 5px rgba(169, 197, 220, 0.14));
 }
 
 body.is-player-app .panel,

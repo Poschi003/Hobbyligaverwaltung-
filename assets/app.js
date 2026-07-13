@@ -996,8 +996,7 @@ function renderPlayerDashboard() {
       .sort((first, second) => first.name.localeCompare(second.name, "de"))
     : [];
   const teamMembersHtml = player.teamId && teamMembers.length
-    ? `<section class="team-members" aria-labelledby="teamMembersTitle">
-        <h2 id="teamMembersTitle">Team</h2>
+    ? `<section class="team-members" aria-label="Team">
         <div class="team-members-row">
           ${teamMembers.map((member) => {
             const fullName = member.name || "Unbekannter Spieler";
@@ -1027,8 +1026,9 @@ function renderPlayerDashboard() {
       </div>
       <section class="player-dashboard-head" aria-label="Spielerprofil von ${escapeHtml(player.name)}, Team ${escapeHtml(teamLabel)}">
         <div class="player-profile-placeholder" aria-label="Profilbild-Platzhalter">${profileInitials || "?"}</div>
+        <p class="player-profile-name" title="${escapeHtml(player.name)}">${escapeHtml(player.name)}</p>
         <div class="player-profile-copy">
-          <h2><span class="player-name-line">${escapeHtml(playerFirstName)}</span>${playerLastName ? `<span class="player-name-line">${escapeHtml(playerLastName)}</span>` : ""}</h2>
+          <p class="player-league-label">LA-Bowling <span>Hobbyliga</span></p>
         </div>
         <div class="player-team-logo-wrap">${teamLogo}</div>
       </section>
