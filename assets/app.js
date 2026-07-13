@@ -1057,9 +1057,9 @@ function renderPlayerDashboard() {
       </section>
     <div class="section dashboard-grid player-dashboard-lower-grid">
       ${playerDashboardNextFixtureHtml(nextFixture, player.teamId)}
-      <div class="panel dashboard-card">
+      <div class="panel dashboard-card player-newsfeed">
         <h2>Newsfeed</h2>
-        <div class="news-list">${news.length ? news.map(newsHtml).join("") : emptyHtml("Keine News", "")}</div>
+        <div class="news-list">${news.length ? news.map(newsHtml).join("") : `<p class="player-newsfeed-empty">Aktuell gibt es keine neuen Meldungen.</p>`}</div>
       </div>
     </div>
     ${dashboardPanel ? playerDashboardPanelHtml(dashboardPanel, player, nextFixture, openFines, table) : ""}
