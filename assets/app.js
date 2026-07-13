@@ -984,6 +984,9 @@ function renderPlayerDashboard() {
   const news = visibleNews().filter((item) => !["Handicap-Regel aktiv", "Saison 2025/26 importiert"].includes(item.title)).slice(0, 4);
 
   const profileInitials = player.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const playerNameParts = String(player.name || "").trim().split(/\s+/).filter(Boolean);
+  const playerFirstName = playerNameParts[0] || "Spieler";
+  const playerLastName = playerNameParts.slice(1).join(" ");
   const teamLabel = team?.name || "Ohne Team";
   const currentUserId = activeUser()?.id;
   const teamMembers = player.teamId
@@ -1022,7 +1025,7 @@ function renderPlayerDashboard() {
       <section class="player-dashboard-head" aria-label="Spielerprofil von ${escapeHtml(player.name)}, Team ${escapeHtml(teamLabel)}">
         <div class="player-profile-placeholder" aria-label="Profilbild-Platzhalter">${profileInitials || "?"}</div>
         <div class="player-profile-copy">
-          <h2>${player.name}</h2>
+          <h2><span class="player-name-line">${escapeHtml(playerFirstName)}</span>${playerLastName ? `<span class="player-name-line">${escapeHtml(playerLastName)}</span>` : ""}</h2>
         </div>
         <div class="player-team-logo-wrap">${teamLogo}</div>
       </section>

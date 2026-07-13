@@ -127,6 +127,12 @@ body.is-player-app .player-profile-placeholder {
 
 body.is-player-app .player-profile-copy h2 {
   font-size: clamp(1.15rem, 5.6vw, 1.35rem);
+  font-weight: 850;
+  line-height: 1;
+}
+
+body.is-player-app .player-name-line {
+  display: block;
 }
 
 body.is-player-app .player-motivation {
