@@ -142,38 +142,58 @@ body.is-player-app .player-team-logo-wrap {
 }
 
 body.is-player-app .team-members {
-  margin: -12px 0 var(--space-4);
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  margin: -36px 0 16px;
   padding: 0 var(--space-1);
 }
 
 body.is-player-app .team-members h2 {
-  margin-bottom: var(--space-1);
+  grid-column: 1;
+  grid-row: 1;
+  margin: 12px 0 0;
   font-size: 0.94rem;
+  line-height: 1.1;
 }
 
 body.is-player-app .team-members-row {
-  gap: 6px;
-  padding: 1px;
+  grid-column: 2;
+  grid-row: 1;
+  gap: 7px;
+  padding: 0 1px 3px;
 }
 
 body.is-player-app .team-member {
-  flex-basis: 46px;
-  min-width: 46px;
-  min-height: 58px;
-  gap: 2px;
+  flex-basis: 44px;
+  min-width: 44px;
+  min-height: 57px;
+  gap: 3px;
 }
 
 body.is-player-app .team-member-avatar {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-width: 2px;
   box-shadow: 0 0 0 2px rgba(37, 137, 235, 0.07), 0 0 9px rgba(40, 146, 255, 0.17);
   font-size: 0.68rem;
 }
 
 body.is-player-app .team-member-name {
-  font-size: 0.65rem;
+  font-size: 0.67rem;
   line-height: 1.1;
+}
+
+body.is-player-app .team-members-empty {
+  display: block;
+  margin-top: -10px;
+}
+
+body.is-player-app .team-members-empty h2 {
+  margin: 0 0 var(--space-1);
 }
 
 body.is-player-app .player-stat-grid {
