@@ -1427,33 +1427,53 @@ function renderPlayerStats() {
   const stats = playerStats(player.id);
   const ownScores = playerScoreRows(player.id);
   const best = ownScores.reduce((max, row) => Math.max(max, row.gross), 0);
+  const profileInitials = player.name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase();
+  const profileImage = player.avatar || player.profileImage || player.photo;
+  const teamLogoUrl = teamLogoFor(team);
+  const averageValue = stats.valid ? stats.average.toFixed(1).replace(".", ",") : "-";
+  const handicapValue = stats.valid ? String(stats.handicap) : "-";
+  const historyContent = ownScores.length
+    ? playerHistoryHtml(ownScores)
+    : `<div class="profile-history-empty"><strong>Persönliche Entwicklung</strong><span>Nach dem ersten gespeicherten Spieltag siehst du hier deine Entwicklung.</span></div>`;
 
   wrap.innerHTML = `
-    <div class="dashboard-welcome">
-      <div>
-        <p class="eyebrow">${team?.name || "Ohne Team"}</p>
-        <h2>Statistiken</h2>
-        <p>${player.name}</p>
-      </div>
-    </div>
-    <div class="section grid cols-4">
-      ${stat("Tabellenplatz", place || "-")}
-      ${stat("Team", team?.name || "-")}
-      ${stat("Gespielte Spiele", stats.games)}
-      ${stat("Siege", teamRow?.gamesWon || 0)}
-    </div>
-    <div class="section grid cols-4">
-      ${stat("Niederlagen", teamRow?.gamesLost || 0)}
-      ${stat("Pins gesamt", stats.pins)}
-      ${stat("Schnitt", stats.valid ? stats.average.toFixed(1) : "n.v.")}
-      ${stat("Handicap", stats.valid ? stats.handicap : "n.v.")}
-    </div>
-    <div class="section grid cols-2">
-      ${stat("Bestes Spiel", best || "-")}
-      <div class="panel">
-        <h2>Persönliche Entwicklung</h2>
-        ${playerHistoryHtml(ownScores)}
-      </div>
+    <div class="player-profile-page">
+      <section class="player-profile-hero" aria-label="Profil von ${escapeHtml(player.name)}">
+        <div class="player-profile-avatar ${profileImage ? "has-image" : ""}">
+          ${profileImage ? `<img src="${escapeHtml(String(profileImage))}" alt="Profil von ${escapeHtml(player.name)}" />` : `<span aria-hidden="true">${escapeHtml(profileInitials || "?")}</span>`}
+        </div>
+        <div class="player-profile-identity">
+          <span>Saisonstatistik</span>
+          <h1>${escapeHtml(player.name)}</h1>
+          <p>${teamLogoUrl ? `<img src="${escapeHtml(teamLogoUrl)}" alt="" onerror="this.hidden=true" />` : ""}${escapeHtml(team?.name || "Ohne Team")}</p>
+        </div>
+      </section>
+
+      <section class="player-profile-section" aria-labelledby="profilePrimaryStats">
+        <h2 id="profilePrimaryStats">Deine Kennzahlen</h2>
+        <div class="profile-primary-stats">
+          <article><span>Schnitt</span><strong>${averageValue}</strong></article>
+          <article><span>Handicap</span><strong>${handicapValue}</strong></article>
+          <article><span>Tabellenplatz</span><strong>${place || "-"}</strong></article>
+          <article><span>Bestes Spiel</span><strong>${best || "-"}</strong></article>
+        </div>
+      </section>
+
+      <section class="player-profile-section" aria-labelledby="profileSeasonStats">
+        <h2 id="profileSeasonStats">Saisonübersicht</h2>
+        <div class="profile-secondary-stats">
+          <article><span>Team</span><strong>${escapeHtml(team?.name || "-")}</strong></article>
+          <article><span>Gespielte Spiele</span><strong>${stats.games}</strong></article>
+          <article><span>Siege</span><strong>${teamRow?.gamesWon || 0}</strong></article>
+          <article><span>Niederlagen</span><strong>${teamRow?.gamesLost || 0}</strong></article>
+          <article><span>Pins gesamt</span><strong>${stats.pins}</strong></article>
+        </div>
+      </section>
+
+      <section class="player-profile-section profile-history-section" aria-labelledby="profileHistory">
+        <h2 id="profileHistory">Persönliche Entwicklung</h2>
+        <div class="profile-history-card">${historyContent}</div>
+      </section>
     </div>
   `;
   return wrap;
