@@ -1122,7 +1122,31 @@ function renderPlayerFixtureDay() {
   const latestOwn = latestActivationRequest(fixture, player.teamId);
   const enterAllowed = canEnterFixture(fixture);
   const statusClass = enterAllowed ? "good" : latestOwn?.status === "pending" ? "warn" : "";
-  const hasPendingOwnActivation = latestOwn?.status === "pending" && latestOwn.type === "activate";
+  const matchdayStatus = playerFixtureStatusInfo(fixture, player.teamId);
+  const matchdayActions = [];
+  const canReschedule = !window.HobbyligaResults.isConfirmed(fixture) && !fixture.saved && fixture.status !== "played";
+
+  if (pendingForOwnTeam) {
+    matchdayActions.push(`<button class="matchday-action-button matchday-action-button--primary" data-action="approve-fixture-request" data-id="${fixture.id}" data-request-id="${pendingForOwnTeam.id}">Freigeben</button>`);
+  } else if (enterAllowed) {
+    matchdayActions.push(`<button class="matchday-action-button matchday-action-button--primary" data-action="start-result" data-id="${fixture.id}">Ergebnisse erfassen</button>`);
+  } else if (!latestOwn || latestOwn.status !== "pending") {
+    matchdayActions.push(`<button class="matchday-action-button matchday-action-button--primary" data-action="request-fixture-activation" data-id="${fixture.id}">Spieltag aktivieren</button>`);
+  }
+
+  if (canReschedule) {
+    matchdayActions.push(`
+      <details class="matchday-reschedule">
+        <summary>Spieltag verschieben</summary>
+        <form class="activation-option compact-reschedule" data-form="fixture-request" data-id="${fixture.id}">
+          <input type="hidden" name="type" value="reschedule" />
+          <input name="proposedDate" type="date" value="${fixture.date || ""}" aria-label="Datum" required />
+          <input name="proposedTime" type="time" value="${fixture.time || "19:00"}" aria-label="Uhrzeit" required />
+          <button class="matchday-action-button matchday-action-button--primary" type="submit">Vorschlag senden</button>
+        </form>
+      </details>
+    `);
+  }
 
   wrap.innerHTML = `
     <div class="fixture-page">
@@ -1144,36 +1168,16 @@ function renderPlayerFixtureDay() {
         </div>
       </section>
 
-      <section class="section fixture-action-grid">
-        <div class="panel sport-panel">
-          <div class="match-title">
-            <div>
-              <span class="field-label">Aktionen</span>
-              <h2>Spieltag aktivieren</h2>
-            </div>
-            ${enterAllowed ? `<button class="primary-button" data-action="start-result" data-id="${fixture.id}">Ergebnisse erfassen</button>` : hasPendingOwnActivation ? `<span class="pill warn">Wartet auf Gegner</span>` : `<button class="primary-button" data-action="request-fixture-activation" data-id="${fixture.id}">Spieltag aktivieren</button>`}
+      <section class="matchday-control-area">
+        <article class="matchday-status-card matchday-status-card--${matchdayStatus.tone}" aria-label="Status: ${escapeHtml(matchdayStatus.title)}">
+          <span class="matchday-status-icon" aria-hidden="true">${matchdayStatusIcon(matchdayStatus.icon)}</span>
+          <div>
+            <h2>${escapeHtml(matchdayStatus.title)}</h2>
+            <p>${escapeHtml(matchdayStatus.description)}</p>
+            ${matchdayStatus.meta ? `<small>${escapeHtml(matchdayStatus.meta)}</small>` : ""}
           </div>
-          ${pendingForOwnTeam ? `<div class="approval-card"><strong>Anfrage vom Gegner</strong><span>${requestLabel(pendingForOwnTeam.type)}${pendingForOwnTeam.proposedDate ? ` · ${formatDate(pendingForOwnTeam.proposedDate)}` : ""}</span><button class="primary-button" data-action="approve-fixture-request" data-id="${fixture.id}" data-request-id="${pendingForOwnTeam.id}">Freigeben</button></div>` : ""}
-          ${latestOwn && latestOwn.status === "pending" ? `<div class="approval-card muted-card"><strong>Wartet auf Gegner</strong><span>${requestLabel(latestOwn.type)}${latestOwn.proposedDate ? ` · ${formatDate(latestOwn.proposedDate)}` : ""}</span></div>` : ""}
-          <details class="reschedule-box">
-            <summary>Spieltag verschieben</summary>
-            <form class="activation-option compact-reschedule" data-form="fixture-request" data-id="${fixture.id}">
-              <input type="hidden" name="type" value="reschedule" />
-              <input name="proposedDate" type="date" value="${fixture.date || ""}" aria-label="Datum" required />
-              <input name="proposedTime" type="time" value="${fixture.time || "19:00"}" aria-label="Uhrzeit" required />
-              <button class="primary-button" type="submit">Absenden</button>
-            </form>
-          </details>
-        </div>
-
-        <div class="panel sport-panel">
-          <span class="field-label">Spielinformationen</span>
-          <div class="fixture-info-list">
-            <span><strong>${ownTeam?.name || "-"}</strong><small>Dein Team</small></span>
-            <span><strong>${opponent?.name || "-"}</strong><small>Gegner</small></span>
-            <span><strong>${fixtureStatusLabels[fixture.status] || fixture.status}</strong><small>Status</small></span>
-          </div>
-        </div>
+        </article>
+        ${matchdayActions.length ? `<section class="matchday-actions"><span class="field-label">Aktionen</span><div>${matchdayActions.join("")}</div></section>` : ""}
       </section>
 
       ${fixtureDetailsContentHtml(fixture, player)}
@@ -1652,6 +1656,52 @@ function requestLabel(type) {
   if (type === "activate") return "Spieltag aktivieren";
   if (type === "reschedule") return "Spieltag verschieben";
   return "Anfrage";
+}
+
+function matchdayStatusIcon(name) {
+  const icons = {
+    calendar: `<path d="M7 3v3M17 3v3M4.5 9h15M6 5h12a1.5 1.5 0 0 1 1.5 1.5v11A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 6 5Z"/>`,
+    clock: `<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3.3 2"/>`,
+    check: `<circle cx="12" cy="12" r="8.5"/><path d="m8.2 12.1 2.4 2.5 5.2-5.4"/>`,
+    arrows: `<path d="M7 7h10M14 4l3 3-3 3M17 17H7M10 14l-3 3 3 3"/>`,
+    alert: `<circle cx="12" cy="12" r="8.5"/><path d="M12 8v4.5M12 16h.01"/>`,
+  };
+  const icon = icons[name] || icons.calendar;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" focusable="false">${icon}</svg>`;
+}
+
+function playerFixtureStatusInfo(fixture, teamId) {
+  const incoming = pendingActivationRequestForTeam(fixture, teamId);
+  const ownRequest = latestActivationRequest(fixture, teamId);
+  const requestMeta = (request) => request?.proposedDate ? `Vorschlag: ${formatDate(request.proposedDate)}${request.proposedTime ? ` · ${request.proposedTime} Uhr` : ""}` : request?.createdAt ? `Anfrage gesendet am ${formatDate(request.createdAt.slice(0, 10))}` : "";
+
+  if (window.HobbyligaResults.isConfirmed(fixture) || fixture.status === "played" || fixture.status === "released") {
+    return { tone: "complete", icon: "check", title: "Abgeschlossen", description: "Dieser Spieltag ist abgeschlossen.", meta: "" };
+  }
+  if (fixture.status === "submitted") {
+    return { tone: "waiting", icon: "clock", title: "Ergebnis wartet auf Freigabe", description: "Die eingereichten Ergebnisse werden vom Ligaleiter geprüft.", meta: "" };
+  }
+  if (canEnterFixture(fixture)) {
+    return { tone: "active", icon: "check", title: "Spieltag aktiv", description: "Der Spieltag ist freigegeben. Ergebnisse können jetzt erfasst werden.", meta: "" };
+  }
+  if (incoming) {
+    return { tone: "waiting", icon: "clock", title: "Anfrage des Gegners", description: `${requestLabel(incoming.type)} wurde angefragt. Bitte prüfe und bestätige den Vorschlag.`, meta: requestMeta(incoming) };
+  }
+  if (ownRequest?.status === "pending") {
+    const requestTitles = { activate: "Wartet auf Gegner", early: "Vorspiel angefragt", late: "Nachspiel angefragt", reschedule: "Verschiebung angefragt" };
+    const requestDescriptions = { activate: "Deine Aktivierungsanfrage wurde gesendet. Der Spieltag startet, sobald das Gegnerteam bestätigt.", early: "Dein Vorschlag zum Vorspielen wartet auf die Bestätigung des Gegnerteams.", late: "Dein Vorschlag zum Nachspielen wartet auf die Bestätigung des Gegnerteams.", reschedule: "Dein Terminwunsch wartet auf die Bestätigung des Gegnerteams." };
+    return { tone: "waiting", icon: ownRequest.type === "activate" ? "clock" : "arrows", title: requestTitles[ownRequest.type] || "Wartet auf Gegner", description: requestDescriptions[ownRequest.type] || "Deine Anfrage wartet auf die Bestätigung des Gegnerteams.", meta: requestMeta(ownRequest) };
+  }
+  if (ownRequest?.status === "rejected" || fixture.status === "rejected") {
+    return { tone: "rejected", icon: "alert", title: "Abgelehnt", description: "Die letzte Anfrage wurde abgelehnt. Bitte stimme einen neuen Termin mit dem Gegnerteam ab.", meta: requestMeta(ownRequest) };
+  }
+  if (fixture.status === "postponed") {
+    return { tone: "waiting", icon: "arrows", title: "Verschoben", description: "Für diesen Spieltag wurde ein neuer Termin vereinbart.", meta: "" };
+  }
+  if (fixture.status === "makeup") {
+    return { tone: "waiting", icon: "calendar", title: "Nachholspiel", description: "Dieser Spieltag wird als Nachholspiel ausgetragen.", meta: "" };
+  }
+  return { tone: "planned", icon: "calendar", title: "Geplant", description: "Der Spieltag kann aktiviert werden, sobald beide Teams bereit sind.", meta: "" };
 }
 
 function matchSummaryHtml(fixture) {
